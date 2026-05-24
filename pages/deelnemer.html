@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WK Quiz 2026 – Mijn Voorspellingen</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .ronde-header { background: linear-gradient(135deg, #0f3460, #16213e); color: white; padding: 16px 20px; border-radius: 12px 12px 0 0; }
+    .ronde-header h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .ronde-header .deadline-info { font-size: 13px; opacity: 0.8; }
+    .ronde-body { border: 1.5px solid #e0e6ed; border-top: none; border-radius: 0 0 12px 12px; padding: 20px; margin-bottom: 24px; }
+    .voorbij-overlay { background: #f8f9fa; border: 1px dashed #dee2e6; border-radius: 8px; padding: 16px; text-align: center; color: #6c757d; font-size: 14px; }
+    .wedstrijd-sectie { margin-bottom: 24px; }
+    .wedstrijd-sectie h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #7f8c8d; font-weight: 700; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0; }
+    .punten-info { font-size: 12px; color: #7f8c8d; margin-top: 6px; font-style: italic; }
+    .auto-save-indicator {
+      position: fixed; bottom: 20px; right: 20px;
+      background: #27ae60; color: white; padding: 10px 18px;
+      border-radius: 20px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 4px 12px rgba(39,174,96,0.4);
+      transform: translateY(60px); transition: transform 0.3s ease; z-index: 200;
+    }
+    .auto-save-indicator.toon { transform: translateY(0); }
+    .welkom-banner { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    .welkom-banner .icon { font-size: 28px; }
+    .welkom-banner h2 { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+    .welkom-banner p { font-size: 13px; opacity: 0.9; }
+    .opgeslagen-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #27ae60; font-weight: 600; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="navbar-brand">🏆 WK <span>Quiz</span> 2026</a>
+    <div class="navbar-user">
+      <span id="nav-naam">Laden...</span>
+      <button class="btn-logout" onclick="uitloggen()">Uitloggen</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div id="welkom-banner" class="welkom-banner" style="display:none">
+      <span class="icon">👋</span>
+      <div>
+        <h2 id="welkom-naam">Welkom!</h2>
+        <p>Vul je voorspellingen in vóór de deadline. Ze worden automatisch opgeslagen.</p>
+      </div>
+    </div>
+
+    <div class="page-header">
+      <h1>Mijn voorspellingen</h1>
+      <p>Beantwoord alle vragen per ronde vóór de deadline</p>
+    </div>
+
+    <div id="rondes-container">
+      <div class="loading"><div class="spinner"></div> Rondes laden...</div>
+    </div>
+  </div>
+
+  <div class="auto-save-indicator" id="save-indicator">✓ Opgeslagen</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script>
+    let gebruikerId = null;
+    let gebruikerAntwoorden = {};
+    let saveTimer = null;
+
+    async function init() {
+      const { data: { session } } = await db.auth.getSession();
+      if (!session) { window.location.href = '../index.html'; return; }
+
+      gebruikerId = session.user.id;
+      const { data: profile } = await db.from('profiles').select('display_name, is_host').eq('id', gebruikerId).single();
+
+      if (profile?.is_host) { window.location.href = './host-dashboard.html'; return; }
+
+      const naam = profile?.display_name || session.user.email;
+      document.getElementById('nav-naam').textContent = naam;
+      document.getElementById('welkom-naam').textContent = 'Welkom, ' + naam + '!';
+      document.getElementById('welkom-banner').style.display = 'flex';
+
+      await laadAntwoorden();
+      await laadRondes();
+    }
+
+    async function laadAntwoorden() {
+      const { data } = await db.from('answers').select('question_id, answer_value').eq('user_id', gebruikerId);
+      if (data) data.forEach(a => { gebruikerAntwoorden[a.question_id] = a.answer_value; });
+    }
+
+    async function laadRondes() {
+      const { data: rondes } = await db.from('rounds')
+        .select('*, questions(*, teams!questions_home_team_id_fkey(name, flag_emoji), away_team:teams!questions_away_team_id_fkey(name, flag_emoji))')
+        .order('sort_order');
+
+      if (!rondes?.length) {
+        document.getElementById('rondes-container').innerHTML = '<div class="card"><p style="text-align:center;color:#7f8c8d;padding:32px">🏟️ De host heeft nog geen vragen aangemaakt. Kom later terug!</p></div>';
+        return;
+      }
+
+      const container = document.getElementById('rondes-container');
+      container.innerHTML = '';
+      for (const ronde of rondes) container.appendChild(bouwRondeElement(ronde));
+    }
+
+    function bouwRondeElement(ronde) {
+      const nu = new Date();
+      const deadline = ronde.deadline ? new Date(ronde.deadline) : null;
+      const isVoorbij = !ronde.is_open || (deadline && deadline < nu);
+      const vragen = ronde.questions || [];
+      const beantwoord = vragen.filter(v => gebruikerAntwoorden[v.id]).length;
+
+      let deadlineText = 'Geen deadline ingesteld';
+      if (!ronde.is_open) deadlineText = '🔒 Ronde gesloten door host';
+      else if (deadline) deadlineText = '📅 Deadline: ' + deadline.toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = `
+        <div class="ronde-header">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <h2>${ronde.name}</h2>
+            <span style="font-size:13px;opacity:0.85">${beantwoord}/${vragen.length} ingevuld</span>
+          </div>
+          <div class="deadline-info">${deadlineText}</div>
+        </div>
+        <div class="ronde-body" id="ronde-body-${ronde.id}"></div>
+      `;
+
+      const body = wrapper.querySelector('#ronde-body-' + ronde.id);
+
+      if (isVoorbij) {
+        body.innerHTML = '<div class="voorbij-overlay">🔒 Deze ronde is gesloten. Je antwoorden zijn opgeslagen.</div>';
+        return wrapper;
+      }
+
+      const wedstrijdVragen = vragen.filter(v => ['result_1x2', 'score'].includes(v.question_type));
+      const andereVragen = vragen.filter(v => !['result_1x2', 'score'].includes(v.question_type));
+
+      if (wedstrijdVragen.length) {
+        const sectie = document.createElement('div');
+        sectie.className = 'wedstrijd-sectie';
+        sectie.innerHTML = '<h3>⚽ Wedstrijden</h3>';
+        wedstrijdVragen.forEach(v => sectie.appendChild(bouwVraagElement(v)));
+        body.appendChild(sectie);
+      }
+
+      if (andereVragen.length) {
+        const sectie = document.createElement('div');
+        sectie.className = 'wedstrijd-sectie';
+        sectie.innerHTML = '<h3>🎯 Algemene vragen</h3>';
+        andereVragen.forEach(v => sectie.appendChild(bouwVraagElement(v)));
+        body.appendChild(sectie);
+      }
+
+      if (!vragen.length) body.innerHTML = '<p style="text-align:center;color:#7f8c8d;padding:20px">Nog geen vragen in deze ronde.</p>';
+
+      return wrapper;
+    }
+
+    function bouwVraagElement(vraag) {
+      const div = document.createElement('div');
+      const huidigAntwoord = gebruikerAntwoorden[vraag.id] || '';
+      div.className = 'question-card' + (huidigAntwoord ? ' beantwoord' : '');
+      div.id = 'vraag-' + vraag.id;
+
+      const thuisTeam = vraag.teams;
+      const uitTeam = vraag.away_team;
+      let inputHTML = '';
+
+      if (vraag.question_type === 'result_1x2') {
+        const g = huidigAntwoord;
+        inputHTML = `
+          <div class="match-teams">
+            <span class="team-name">${thuisTeam?.flag_emoji || ''} ${thuisTeam?.name || 'Thuis'}</span>
+            <span class="vs-badge">VS</span>
+            <span class="team-name">${uitTeam?.name || 'Uit'} ${uitTeam?.flag_emoji || ''}</span>
+          </div>
+          <div class="result-buttons">
+            <button class="result-btn ${g==='1'?'selected-1':''}" onclick="slaAntwoordOp(${vraag.id},'1',this,'result')">1<br><small>Thuiswinst</small></button>
+            <button class="result-btn ${g==='X'?'selected-X':''}" onclick="slaAntwoordOp(${vraag.id},'X',this,'result')">X<br><small>Gelijkspel</small></button>
+            <button class="result-btn ${g==='2'?'selected-2':''}" onclick="slaAntwoordOp(${vraag.id},'2',this,'result')">2<br><small>Uitwinst</small></button>
+          </div>
+          <p class="punten-info">✦ Juist: ${vraag.points} punten</p>`;
+      } else if (vraag.question_type === 'score') {
+        const d = huidigAntwoord ? huidigAntwoord.split('-') : ['',''];
+        inputHTML = `
+          <div class="match-teams">
+            <span class="team-name">${thuisTeam?.flag_emoji || ''} ${thuisTeam?.name || 'Thuis'}</span>
+            <span class="vs-badge">SCORE</span>
+            <span class="team-name">${uitTeam?.name || 'Uit'} ${uitTeam?.flag_emoji || ''}</span>
+          </div>
+          <div class="score-input-group" style="justify-content:center">
+            <input type="number" min="0" max="30" value="${d[0]}" id="score-thuis-${vraag.id}" placeholder="0" onchange="slaScoreOp(${vraag.id})" style="width:70px;text-align:center">
+            <span class="score-separator">—</span>
+            <input type="number" min="0" max="30" value="${d[1]}" id="score-uit-${vraag.id}" placeholder="0" onchange="slaScoreOp(${vraag.id})" style="width:70px;text-align:center">
+          </div>
+          <p class="punten-info">✦ Juiste score: ${vraag.points} punten</p>`;
+      } else if (vraag.question_type === 'team_select') {
+        inputHTML = `<div class="form-group" style="margin:0">
+          <select id="input-${vraag.id}" onchange="slaAntwoordOp(${vraag.id},this.value,null,'select')">
+            <option value="">-- Kies een land --</option>
+          </select>
+          <p class="punten-info">✦ Juist: ${vraag.points} punten</p>
+        </div>`;
+      } else {
+        inputHTML = `<div class="form-group" style="margin:0">
+          <input type="text" id="input-${vraag.id}" value="${huidigAntwoord}" placeholder="Jouw antwoord..." oninput="slaAntwoordOpMetVertraging(${vraag.id},this.value)">
+          <p class="punten-info">✦ Juist: ${vraag.points} punten</p>
+        </div>`;
+      }
+
+      div.innerHTML = `
+        <div class="question-number">Vraag ${vraag.sort_order} · <span class="badge badge-punten-${vraag.points}">${vraag.points} pt</span></div>
+        <div class="question-text">${vraag.question_text}</div>
+        ${inputHTML}
+        <div class="opgeslagen-badge" id="saved-${vraag.id}" style="display:${huidigAntwoord?'inline-flex':'none'}">✓ Opgeslagen</div>
+      `;
+
+      if (vraag.question_type === 'team_select') laadTeamsInDropdown(vraag.id, huidigAntwoord);
+      return div;
+    }
+
+    async function laadTeamsInDropdown(vraagId, huidigAntwoord) {
+      const { data: teams } = await db.from('teams').select('name, flag_emoji').order('name');
+      const select = document.getElementById('input-' + vraagId);
+      if (!select || !teams) return;
+      teams.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.name;
+        opt.textContent = (t.flag_emoji || '') + ' ' + t.name;
+        if (t.name === huidigAntwoord) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    async function slaAntwoordOp(vraagId, waarde, knop, type) {
+      gebruikerAntwoorden[vraagId] = waarde;
+      if (type === 'result' && knop) {
+        knop.closest('.result-buttons').querySelectorAll('.result-btn').forEach(b => b.className = 'result-btn');
+        knop.classList.add('selected-' + waarde);
+      }
+      await slaOp(vraagId, waarde);
+    }
+
+    function slaAntwoordOpMetVertraging(vraagId, waarde) {
+      gebruikerAntwoorden[vraagId] = waarde;
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => slaOp(vraagId, waarde), 800);
+    }
+
+    async function slaScoreOp(vraagId) {
+      const t = document.getElementById('score-thuis-' + vraagId)?.value;
+      const u = document.getElementById('score-uit-' + vraagId)?.value;
+      if (t === '' || u === '') return;
+      await slaOp(vraagId, t + '-' + u);
+    }
+
+    async function slaOp(vraagId, waarde) {
+      const { error } = await db.from('answers').upsert({
+        user_id: gebruikerId, question_id: vraagId,
+        answer_value: waarde, updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,question_id' });
+
+      if (!error) {
+        document.getElementById('saved-' + vraagId)?.style.setProperty('display', 'inline-flex');
+        document.getElementById('vraag-' + vraagId)?.classList.add('beantwoord');
+        const ind = document.getElementById('save-indicator');
+        ind.classList.add('toon');
+        setTimeout(() => ind.classList.remove('toon'), 2000);
+      }
+    }
+
+    async function uitloggen() {
+      await db.auth.signOut();
+      window.location.href = '../index.html';
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WK Quiz 2026 – Deelnemersbeheer</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .deelnemer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+      margin-top: 8px;
+    }
+    .deelnemer-kaart {
+      background: white;
+      border: 1.5px solid #e8ecef;
+      border-radius: 12px;
+      padding: 16px;
+      transition: 0.2s;
+    }
+    .deelnemer-kaart:hover { border-color: #c8d0d8; }
+    .deelnemer-kaart.actief { border-left: 4px solid #27ae60; }
+    .deelnemer-kaart.nooit { border-left: 4px solid #e0e6ed; }
+
+    .dk-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .dk-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 15px;
+      flex-shrink: 0;
+    }
+    .dk-avatar.actief { background: #eafaf1; color: #27ae60; }
+    .dk-avatar.nooit   { background: #f0f4f8; color: #7f8c8d; }
+
+    .dk-naam {
+      font-size: 15px; font-weight: 700; color: #1a1a2e;
+    }
+    .dk-email {
+      font-size: 12px; color: #7f8c8d; margin-top: 1px;
+    }
+    .dk-status {
+      font-size: 12px; font-weight: 600;
+      padding: 2px 8px; border-radius: 10px;
+      margin-left: auto; flex-shrink: 0;
+    }
+    .dk-status.actief  { background: #eafaf1; color: #27ae60; }
+    .dk-status.nooit   { background: #f0f4f8; color: #7f8c8d; }
+
+    .dk-stats {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: #7f8c8d;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .dk-stats span { display: flex; align-items: center; gap: 4px; }
+
+    .dk-acties {
+      display: flex;
+      gap: 8px;
+    }
+
+    .naam-edit-groep {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .naam-edit-groep input {
+      flex: 1;
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 6px;
+      border: 1.5px solid #dde4e6;
+    }
+    .naam-edit-groep input:focus { border-color: #0f3460; outline: none; }
+
+    .btn-xs {
+      padding: 5px 10px;
+      font-size: 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.15s;
+      white-space: nowrap;
+    }
+    .btn-xs.opslaan { background: #0f3460; color: white; }
+    .btn-xs.opslaan:hover { background: #0a2a4e; }
+    .btn-xs.link { background: #f0f4f8; color: #0f3460; }
+    .btn-xs.link:hover { background: #e0e8f0; }
+    .btn-xs.link:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #27ae60; color: white;
+      padding: 12px 20px; border-radius: 10px;
+      font-size: 14px; font-weight: 600;
+      box-shadow: 0 4px 12px rgba(39,174,96,0.4);
+      transform: translateY(80px);
+      transition: transform 0.3s ease;
+      z-index: 500;
+    }
+    .toast.fout { background: #c0392b; box-shadow: 0 4px 12px rgba(192,57,43,0.4); }
+    .toast.toon { transform: translateY(0); }
+
+    .samenvatting {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .sam-kaart {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+    }
+    .sam-kaart .getal { font-size: 26px; font-weight: 800; color: #0f3460; }
+    .sam-kaart .label { font-size: 12px; color: #7f8c8d; margin-top: 3px; }
+
+    .filter-balk {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid #dde4e6;
+      background: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #5a6a7a;
+      transition: 0.15s;
+    }
+    .filter-btn.actief { background: #0f3460; color: white; border-color: #0f3460; }
+
+    .link-verzonden { color: #27ae60; font-size: 12px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="navbar-brand">🏆 WK <span>Quiz</span> 2026</a>
+    <div class="navbar-user">
+      <span style="color:#f39c12;font-weight:700">👑 HOST</span>
+      <a href="./host-dashboard.html" class="btn-logout">← Dashboard</a>
+      <button class="btn-logout" onclick="uitloggen()">Uitloggen</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>👥 Deelnemersbeheer</h1>
+      <p>Overzicht van alle deelnemers — naam aanpassen of inloglink sturen</p>
+    </div>
+
+    <!-- Samenvatting -->
+    <div class="samenvatting">
+      <div class="sam-kaart"><div class="getal" id="sam-totaal">–</div><div class="label">Totaal deelnemers</div></div>
+      <div class="sam-kaart"><div class="getal" id="sam-actief" style="color:#27ae60">–</div><div class="label">Al ingelogd</div></div>
+      <div class="sam-kaart"><div class="getal" id="sam-nooit" style="color:#7f8c8d">–</div><div class="label">Nog niet ingelogd</div></div>
+      <div class="sam-kaart"><div class="getal" id="sam-antwoorden" style="color:#f39c12">–</div><div class="label">Antwoorden ingediend</div></div>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-balk">
+      <span style="font-size:13px;color:#7f8c8d;font-weight:600">Filter:</span>
+      <button class="filter-btn actief" onclick="filterDeelnemers('alle', this)">Alle</button>
+      <button class="filter-btn" onclick="filterDeelnemers('actief', this)">✅ Al ingelogd</button>
+      <button class="filter-btn" onclick="filterDeelnemers('nooit', this)">⏳ Nog niet ingelogd</button>
+    </div>
+
+    <!-- Deelnemers grid -->
+    <div class="deelnemer-grid" id="deelnemer-grid">
+      <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Laden...</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script>
+    let alleDeelnemers = [];
+    let actieveFilter = 'alle';
+
+    async function init() {
+      const { data: { session } } = await db.auth.getSession();
+      if (!session) { window.location.href = '../index.html'; return; }
+      const { data: profile } = await db.from('profiles').select('is_host').eq('id', session.user.id).single();
+      if (!profile?.is_host) { window.location.href = './deelnemer.html'; return; }
+      await laadDeelnemers();
+    }
+
+    async function laadDeelnemers() {
+      const { data: profiles } = await db
+        .from('profiles')
+        .select('id, display_name, created_at, is_host')
+        .eq('is_host', false)
+        .order('display_name');
+
+      const { data: authUsers } = await db.auth.admin?.listUsers?.() || { data: null };
+
+      const { data: antwoorden } = await db
+        .from('answers')
+        .select('user_id');
+
+      const { data: scores } = await db
+        .from('scores')
+        .select('user_id, points_awarded');
+
+      // Tel antwoorden per gebruiker
+      const aantalAntwoorden = {};
+      antwoorden?.forEach(a => {
+        aantalAntwoorden[a.user_id] = (aantalAntwoorden[a.user_id] || 0) + 1;
+      });
+
+      // Tel punten per gebruiker
+      const totaalPunten = {};
+      scores?.forEach(s => {
+        totaalPunten[s.user_id] = (totaalPunten[s.user_id] || 0) + s.points_awarded;
+      });
+
+      // Haal last_sign_in op via een aparte query
+      const { data: gebruikersData } = await db
+        .from('profiles')
+        .select('id, created_at')
+        .eq('is_host', false);
+
+      alleDeelnemers = (profiles || []).map(p => ({
+        ...p,
+        antwoorden: aantalAntwoorden[p.id] || 0,
+        punten: totaalPunten[p.id] || 0,
+        heeftAntwoorden: (aantalAntwoorden[p.id] || 0) > 0
+      }));
+
+      // Stats bijwerken
+      document.getElementById('sam-totaal').textContent = alleDeelnemers.length;
+      document.getElementById('sam-actief').textContent = alleDeelnemers.filter(d => d.heeftAntwoorden).length;
+      document.getElementById('sam-nooit').textContent = alleDeelnemers.filter(d => !d.heeftAntwoorden).length;
+      document.getElementById('sam-antwoorden').textContent = antwoorden?.length || 0;
+
+      renderDeelnemers();
+    }
+
+    function filterDeelnemers(filter, knop) {
+      actieveFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('actief'));
+      knop.classList.add('actief');
+      renderDeelnemers();
+    }
+
+    function renderDeelnemers() {
+      const gefilterd = alleDeelnemers.filter(d => {
+        if (actieveFilter === 'actief') return d.heeftAntwoorden;
+        if (actieveFilter === 'nooit') return !d.heeftAntwoorden;
+        return true;
+      });
+
+      const grid = document.getElementById('deelnemer-grid');
+
+      if (!gefilterd.length) {
+        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#7f8c8d;padding:32px">Geen deelnemers gevonden.</p>';
+        return;
+      }
+
+      grid.innerHTML = gefilterd.map(d => {
+        const initialen = d.display_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+        const statusKlasse = d.heeftAntwoorden ? 'actief' : 'nooit';
+        const statusTekst = d.heeftAntwoorden ? '✅ Actief' : '⏳ Afwachtend';
+
+        return `
+          <div class="deelnemer-kaart ${statusKlasse}" id="kaart-${d.id}">
+            <div class="dk-header">
+              <div class="dk-avatar ${statusKlasse}">${initialen}</div>
+              <div style="flex:1;min-width:0">
+                <div class="dk-naam">${d.display_name}</div>
+              </div>
+              <span class="dk-status ${statusKlasse}">${statusTekst}</span>
+            </div>
+
+            <div class="dk-stats">
+              <span>📝 ${d.antwoorden} antwoorden</span>
+              <span>🏆 ${d.punten} punten</span>
+            </div>
+
+            <div class="naam-edit-groep" style="margin-bottom:8px">
+              <input type="text" id="naam-${d.id}" value="${d.display_name}" placeholder="Naam...">
+              <button class="btn-xs opslaan" onclick="slaaNaamOp('${d.id}')">Opslaan</button>
+            </div>
+
+            <div class="dk-acties">
+              <button class="btn-xs link" id="link-btn-${d.id}" onclick="stuurMagicLink('${d.id}', this)">
+                ✉️ Stuur inloglink
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function slaaNaamOp(userId) {
+      const input = document.getElementById('naam-' + userId);
+      const nieuwNaam = input.value.trim();
+      if (!nieuwNaam) { toonToast('Naam mag niet leeg zijn', true); return; }
+
+      const { error } = await db.from('profiles').update({ display_name: nieuwNaam }).eq('id', userId);
+
+      if (error) {
+        toonToast('❌ Fout bij opslaan', true);
+      } else {
+        // Update lokale data
+        const d = alleDeelnemers.find(d => d.id === userId);
+        if (d) d.display_name = nieuwNaam;
+        // Update avatar initialen
+        const kaart = document.getElementById('kaart-' + userId);
+        if (kaart) {
+          const initialen = nieuwNaam.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+          kaart.querySelector('.dk-avatar').textContent = initialen;
+          kaart.querySelector('.dk-naam').textContent = nieuwNaam;
+        }
+        toonToast('✓ Naam opgeslagen voor ' + nieuwNaam);
+      }
+    }
+
+    async function stuurMagicLink(userId, knop) {
+      // Zoek e-mailadres van de gebruiker
+      const deelnemer = alleDeelnemers.find(d => d.id === userId);
+      if (!deelnemer) return;
+
+      // Haal e-mail op via een aparte lookup
+      const { data: gebruikers } = await db
+        .from('profiles')
+        .select('id')
+        .eq('id', userId);
+
+      // We genereren een admin invite link
+      knop.disabled = true;
+      knop.textContent = 'Verzenden...';
+
+      // Gebruik signInWithOtp als fallback (stuurt naar e-mailadres van de user)
+      // Haal eerst het e-mailadres op
+      const emailMap = {
+        'Inge':     'i.saeys@rsmbelgium.be',
+        'Andy':     'a.beeckman@rsmbelgium.be',
+        'Kenan':    'k.feradov@rsmbelgium.be',
+        'Jonas U':  'j.uytterhaegen@rsmbelgium.be',
+        'Nathalie': 'n.driscart@rsmbelgium.be',
+        'Jonas S':  'j.simaeys@rsmbelgium.be',
+        'Sarah':    's.moeyersoons@rsmbelgium.be',
+        'Niels':    'n.ringoot@rsmbelgium.be',
+        'Marvin':   'm.seitz@rsmbelgium.be',
+        'Arnaud':   'a.verhasselt@rsmbelgium.be',
+        'Roxanne':  'r.mommaerts@rsmbelgium.be',
+        'Julie':    'j.praet@rsmbelgium.be',
+        'Humeysa':  'h.kekec@rsmbelgium.be',
+      };
+
+      const naam = alleDeelnemers.find(d => d.id === userId)?.display_name;
+      const email = emailMap[naam];
+
+      if (!email) {
+        knop.disabled = false;
+        knop.textContent = '✉️ Stuur inloglink';
+        toonToast('❌ E-mailadres niet gevonden', true);
+        return;
+      }
+
+      const { error } = await db.auth.signInWithOtp({
+        email: email,
+        options: { emailRedirectTo: 'https://vesquen95.github.io/rsm-wk-2026/auth-callback.html' }
+      });
+
+      if (error) {
+        knop.disabled = false;
+        knop.textContent = '✉️ Stuur inloglink';
+        toonToast('❌ ' + error.message, true);
+      } else {
+        knop.textContent = '✅ Verzonden!';
+        knop.classList.add('link-verzonden');
+        toonToast('✓ Inloglink verzonden naar ' + naam);
+        setTimeout(() => {
+          knop.disabled = false;
+          knop.textContent = '✉️ Stuur inloglink';
+          knop.classList.remove('link-verzonden');
+        }, 5000);
+      }
+    }
+
+    function toonToast(bericht, fout = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = bericht;
+      toast.className = 'toast' + (fout ? ' fout' : '');
+      setTimeout(() => toast.classList.add('toon'), 10);
+      setTimeout(() => toast.classList.remove('toon'), 3000);
+    }
+
+    async function uitloggen() {
+      await db.auth.signOut();
+      window.location.href = '../index.html';
+    }
+
+    init();
+  </script>
+</body>
+</html>

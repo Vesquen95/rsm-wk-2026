@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WK Quiz 2026 – Inloggen</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .login-box {
+      background: white;
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .login-logo { text-align: center; margin-bottom: 32px; }
+    .login-logo .trophy { font-size: 56px; margin-bottom: 12px; display: block; }
+    .login-logo h1 { font-size: 26px; font-weight: 800; color: #1a1a2e; line-height: 1.2; }
+    .login-logo h1 span { color: #f39c12; }
+    .login-logo p { color: #7f8c8d; font-size: 14px; margin-top: 6px; }
+    .login-form { margin-top: 28px; }
+    .login-form .form-group { margin-bottom: 20px; }
+    .login-form input[type="email"] {
+      width: 100%; font-size: 16px; padding: 14px 16px;
+      border-radius: 10px; border: 2px solid #e0e6ed;
+      box-sizing: border-box;
+    }
+    .btn-login {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #0f3460, #16213e);
+      color: white; border: none; border-radius: 10px;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer; transition: 0.2s ease;
+    }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,52,96,0.35); }
+    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .success-box {
+      text-align: center; padding: 24px;
+      background: #eafaf1; border-radius: 12px;
+      margin-top: 20px; display: none;
+    }
+    .success-box .check { font-size: 40px; margin-bottom: 10px; }
+    .success-box h3 { font-size: 18px; color: #155724; margin-bottom: 8px; }
+    .success-box p { font-size: 14px; color: #27ae60; }
+    .info-text { font-size: 13px; color: #7f8c8d; text-align: center; margin-top: 16px; line-height: 1.6; }
+    #error-msg {
+      background: #fdecea; color: #c0392b;
+      padding: 10px 14px; border-radius: 8px;
+      font-size: 14px; margin-bottom: 16px; display: none;
+    }
+    .host-sectie {
+      margin-top: 24px; padding-top: 20px;
+      border-top: 1px solid #ecf0f1;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .scoreboard-link a { color: #f39c12; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .scoreboard-link a:hover { text-decoration: underline; }
+    .btn-host {
+      background: none; border: 1.5px solid #e0e6ed;
+      color: #95a5a6; padding: 7px 14px;
+      border-radius: 8px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: 0.2s;
+    }
+    .btn-host:hover { border-color: #f39c12; color: #f39c12; }
+    .host-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6); z-index: 200;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .host-overlay.open { display: flex; }
+    .host-modal {
+      background: white; border-radius: 16px; padding: 32px;
+      width: 100%; max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .host-modal h3 { font-size: 20px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+    .host-modal p { font-size: 13px; color: #7f8c8d; margin-bottom: 24px; }
+    .host-modal input {
+      width: 100%; font-size: 15px; padding: 12px 14px;
+      border-radius: 10px; border: 2px solid #e0e6ed;
+      margin-bottom: 12px; box-sizing: border-box;
+    }
+    .host-modal input:focus { border-color: #f39c12; outline: none; }
+    .btn-host-login {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      color: white; border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s;
+    }
+    .btn-host-login:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(243,156,18,0.4); }
+    .btn-host-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-annuleer {
+      width: 100%; padding: 10px; background: none; border: none;
+      color: #95a5a6; font-size: 14px; cursor: pointer; margin-top: 8px;
+    }
+    .btn-annuleer:hover { color: #7f8c8d; }
+    #host-error {
+      background: #fdecea; color: #c0392b;
+      padding: 10px 14px; border-radius: 8px;
+      font-size: 13px; margin-bottom: 12px; display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="trophy">🏆</span>
+      <h1>WK <span>Quiz</span> 2026</h1>
+      <p>Voorspel, scoor en win!</p>
+    </div>
+
+    <div id="error-msg"></div>
+
+    <div class="login-form" id="form-container">
+      <div class="form-group">
+        <label for="email">Jouw e-mailadres</label>
+        <input type="email" id="email" placeholder="voornaam@bedrijf.com" autocomplete="email">
+      </div>
+      <button class="btn-login" id="btn-send" onclick="verstuurMagicLink()">
+        ✉️ Stuur inloglink
+      </button>
+      <p class="info-text">
+        Je ontvangt een link per e-mail.<br>
+        Klik op de link om in te loggen — geen wachtwoord nodig.
+      </p>
+    </div>
+
+    <div class="success-box" id="success-box">
+      <div class="check">📬</div>
+      <h3>Link verzonden!</h3>
+      <p>Controleer je inbox en klik op de link om in te loggen.</p>
+    </div>
+
+    <div class="host-sectie">
+      <div class="scoreboard-link">
+        <a href="./scoreboard.html">🏅 Live scoreboard →</a>
+      </div>
+      <button class="btn-host" onclick="document.getElementById('host-overlay').classList.add('open')">
+        👑 Host
+      </button>
+    </div>
+  </div>
+
+  <!-- Host modal -->
+  <div class="host-overlay" id="host-overlay">
+    <div class="host-modal">
+      <h3>👑 Host inloggen</h3>
+      <p>Enkel voor de quizmaster.</p>
+      <div id="host-error"></div>
+      <input type="email" id="host-email" placeholder="E-mailadres" autocomplete="email">
+      <input type="password" id="host-wachtwoord" placeholder="Wachtwoord" autocomplete="current-password">
+      <button class="btn-host-login" id="btn-host-login" onclick="hostInloggen()">
+        Inloggen als host
+      </button>
+      <button class="btn-annuleer" onclick="document.getElementById('host-overlay').classList.remove('open')">
+        Annuleren
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/config.js"></script>
+  <script>
+    async function checkSession() {
+      try {
+        const { data: { session } } = await db.auth.getSession();
+        if (!session) return;
+        const { data: profile } = await db.from('profiles').select('is_host').eq('id', session.user.id).single();
+        window.location.href = profile?.is_host ? '/pages/host-dashboard.html' : '/pages/deelnemer.html';
+      } catch(e) { console.log('Sessie check:', e); }
+    }
+
+    async function verstuurMagicLink() {
+      const email = document.getElementById('email').value.trim();
+      const btn = document.getElementById('btn-send');
+      const errorEl = document.getElementById('error-msg');
+      errorEl.style.display = 'none';
+
+      if (!email || !email.includes('@')) {
+        errorEl.textContent = '⚠️ Vul een geldig e-mailadres in.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Verzenden...';
+
+      const { error } = await db.auth.signInWithOtp({
+        email: email,
+        options: { emailRedirectTo: 'https://vesquen95.github.io/rsm-wk-2026/auth-callback.html' }
+      });
+
+      if (error) {
+        errorEl.textContent = '❌ Fout: ' + error.message;
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = '✉️ Stuur inloglink';
+      } else {
+        document.getElementById('form-container').style.display = 'none';
+        document.getElementById('success-box').style.display = 'block';
+      }
+    }
+
+    async function hostInloggen() {
+      const email = document.getElementById('host-email').value.trim();
+      const wachtwoord = document.getElementById('host-wachtwoord').value;
+      const btn = document.getElementById('btn-host-login');
+      const errorEl = document.getElementById('host-error');
+      errorEl.style.display = 'none';
+
+      if (!email || !wachtwoord) {
+        errorEl.textContent = '⚠️ Vul e-mail en wachtwoord in.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Inloggen...';
+
+      const { data, error } = await db.auth.signInWithPassword({ email: email, password: wachtwoord });
+
+      if (error) {
+        errorEl.textContent = '❌ Fout wachtwoord of e-mailadres.';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Inloggen als host';
+        return;
+      }
+
+      const { data: profile } = await db.from('profiles').select('is_host').eq('id', data.user.id).single();
+
+      if (!profile?.is_host) {
+        await db.auth.signOut();
+        errorEl.textContent = '❌ Dit account heeft geen hostrechten.';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Inloggen als host';
+        return;
+      }
+
+      window.location.href = './pages/host-dashboard.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkSession();
+      document.getElementById('email').addEventListener('keypress', e => { if (e.key === 'Enter') verstuurMagicLink(); });
+      document.getElementById('host-wachtwoord').addEventListener('keypress', e => { if (e.key === 'Enter') hostInloggen(); });
+      document.getElementById('host-overlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('host-overlay'))
+          document.getElementById('host-overlay').classList.remove('open');
+      });
+    });
+  </script>
+</body>
+</html>

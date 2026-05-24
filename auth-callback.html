@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WK Quiz 2026 – Inloggen...</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    }
+    .callback-box {
+      background: white; border-radius: 20px;
+      padding: 48px 40px; text-align: center; max-width: 360px; width: 90%;
+    }
+    .callback-box .icon { font-size: 48px; margin-bottom: 16px; }
+    .callback-box h2 { color: #1a1a2e; margin-bottom: 8px; }
+    .callback-box p { color: #7f8c8d; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="callback-box">
+    <div class="icon" id="icon">⏳</div>
+    <h2 id="titel">Even geduld...</h2>
+    <p id="bericht">We loggen je in.</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/config.js"></script>
+  <script>
+    async function handleCallback() {
+      try {
+        // Wacht even zodat Supabase de URL-token kan verwerken
+        await new Promise(r => setTimeout(r, 1000));
+
+        const { data: { session }, error } = await db.auth.getSession();
+
+        if (error || !session) {
+          document.getElementById('icon').textContent = '❌';
+          document.getElementById('titel').textContent = 'Inloggen mislukt';
+          document.getElementById('bericht').textContent = 'De link is verlopen of ongeldig. Probeer opnieuw.';
+          setTimeout(() => window.location.href = './index.html', 3000);
+          return;
+        }
+
+        const { data: profile } = await db
+          .from('profiles')
+          .select('is_host, display_name')
+          .eq('id', session.user.id)
+          .single();
+
+        document.getElementById('icon').textContent = '✅';
+        document.getElementById('titel').textContent = 'Welkom, ' + (profile?.display_name || 'deelnemer') + '!';
+        document.getElementById('bericht').textContent = 'Je wordt doorgestuurd...';
+
+        setTimeout(() => {
+          window.location.href = profile?.is_host ? '/pages/host-dashboard.html' : '/pages/deelnemer.html';
+        }, 1500);
+
+      } catch(e) {
+        document.getElementById('icon').textContent = '❌';
+        document.getElementById('titel').textContent = 'Er ging iets mis';
+        document.getElementById('bericht').textContent = e.message;
+        setTimeout(() => window.location.href = './index.html', 3000);
+      }
+    }
+
+    handleCallback();
+  </script>
+</body>
+</html>
