@@ -3,109 +3,259 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WK Quiz 2026 – Inloggen</title>
+  <title>RSM WK Quiz 2026</title>
   <link rel="stylesheet" href="./css/style.css">
   <style>
     body {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      background: #000;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
+
+    /* RSM kleurenbar bovenaan */
+    .top-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(to right, #888b8d 12%, #3f9c35 35%, #009cde 60%);
+      z-index: 200;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 440px;
+      margin-top: 20px;
+    }
+
+    /* RSM logo bovenaan */
+    .rsm-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .rsm-header img {
+      height: 56px;
+      width: auto;
+    }
+
     .login-box {
       background: white;
-      border-radius: 20px;
-      padding: 48px 40px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
-    .login-logo { text-align: center; margin-bottom: 32px; }
-    .login-logo .trophy { font-size: 56px; margin-bottom: 12px; display: block; }
-    .login-logo h1 { font-size: 26px; font-weight: 800; color: #1a1a2e; line-height: 1.2; }
-    .login-logo h1 span { color: #f39c12; }
-    .login-logo p { color: #7f8c8d; font-size: 14px; margin-top: 6px; }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 600; color: #5a6a7a; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .form-group input {
-      width: 100%; font-size: 16px; padding: 14px 16px;
-      border-radius: 10px; border: 2px solid #e0e6ed;
-      box-sizing: border-box; transition: 0.2s;
+
+    /* WK logo header sectie */
+    .login-hero {
+      background: #000;
+      padding: 28px 32px 20px;
+      text-align: center;
+      border-bottom: 3px solid #009cde;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
     }
-    .form-group input:focus { border-color: #0f3460; outline: none; }
+    .login-hero img.wk-logo { height: 80px; width: auto; }
+    .login-hero-tekst h1 {
+      font-size: 22px; font-weight: bold;
+      color: white; line-height: 1.2;
+      text-align: left;
+    }
+    .login-hero-tekst h1 span { color: #009cde; }
+    .login-hero-tekst p {
+      color: #888b8d; font-size: 13px; margin-top: 4px; text-align: left;
+    }
+
+    /* Formulier */
+    .login-body { padding: 28px 32px 24px; }
+
+    .login-body label {
+      display: block; font-size: 11px; font-weight: bold;
+      color: #888b8d; margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    .login-body input[type="email"] {
+      width: 100%; font-size: 15px; padding: 11px 13px;
+      border: 1.5px solid #d0d0d0; border-radius: 4px;
+      font-family: Arial, sans-serif;
+      transition: 0.2s; box-sizing: border-box;
+    }
+    .login-body input:focus { border-color: #009cde; outline: none; box-shadow: 0 0 0 3px rgba(0,156,222,0.1); }
+
     .btn-login {
-      width: 100%; padding: 14px;
-      background: linear-gradient(135deg, #0f3460, #16213e);
-      color: white; border: none; border-radius: 10px;
-      font-size: 16px; font-weight: 700;
-      cursor: pointer; transition: 0.2s ease;
+      width: 100%; padding: 12px;
+      background: #009cde;
+      color: white; border: none; border-radius: 4px;
+      font-size: 14px; font-weight: bold; font-family: Arial, sans-serif;
+      cursor: pointer; transition: 0.2s; margin-top: 16px;
+      letter-spacing: 0.3px; text-transform: uppercase;
     }
-    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,52,96,0.35); }
+    .btn-login:hover { background: #007ab5; transform: translateY(-1px); }
     .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .info-text { font-size: 13px; color: #7f8c8d; text-align: center; margin-top: 16px; line-height: 1.6; }
-    .success-box {
-      text-align: center; padding: 24px;
-      background: #eafaf1; border-radius: 12px;
-      margin-top: 20px; display: none;
+
+    .info-text {
+      font-size: 12px; color: #888b8d;
+      text-align: center; margin-top: 12px; line-height: 1.6;
     }
-    .success-box .check { font-size: 40px; margin-bottom: 10px; }
-    .success-box h3 { font-size: 18px; color: #155724; margin-bottom: 8px; }
-    .success-box p { font-size: 14px; color: #27ae60; }
+
+    .success-box {
+      text-align: center; padding: 22px;
+      background: #e8f5e5; border-radius: 4px;
+      margin-top: 16px; display: none;
+      border-left: 4px solid #3f9c35;
+    }
+    .success-box .icon { font-size: 36px; margin-bottom: 8px; }
+    .success-box h3 { font-size: 16px; color: #1e5c18; margin-bottom: 6px; font-weight: bold; }
+    .success-box p { font-size: 13px; color: #3f9c35; }
+
     #error-msg {
       background: #fdecea; color: #c0392b;
-      padding: 10px 14px; border-radius: 8px;
-      font-size: 14px; margin-bottom: 16px; display: none;
+      padding: 10px 13px; border-radius: 4px;
+      font-size: 13px; margin-bottom: 14px; display: none;
+      border-left: 4px solid #c0392b;
     }
-    .onderaan {
-      margin-top: 24px; padding-top: 20px;
-      border-top: 1px solid #ecf0f1;
+
+    /* Onderste balk */
+    .login-footer {
       display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 32px;
+      background: #f4f4f4;
+      border-top: 1px solid #e0e0e0;
     }
-    .scoreboard-link a { color: #f39c12; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .scoreboard-link a {
+      color: #009cde; text-decoration: none;
+      font-size: 13px; font-weight: bold;
+    }
     .scoreboard-link a:hover { text-decoration: underline; }
-    .host-tag {
-      font-size: 12px; color: #bdc3c7;
-      font-style: italic;
+
+    .btn-host {
+      background: none; border: 1.5px solid #d0d0d0;
+      color: #888b8d; padding: 6px 13px;
+      border-radius: 4px; font-size: 12px; font-weight: bold;
+      font-family: Arial, sans-serif; cursor: pointer; transition: 0.2s;
+      text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .btn-host:hover { border-color: #3f9c35; color: #3f9c35; }
+
+    /* Host modal */
+    .host-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7); z-index: 300;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .host-overlay.open { display: flex; }
+    .host-modal {
+      background: white; border-radius: 6px;
+      padding: 28px 32px; width: 100%; max-width: 380px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      border-top: 4px solid #3f9c35;
+    }
+    .host-modal h3 {
+      font-size: 18px; font-weight: bold; color: #1a1a1a;
+      margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .host-modal p { font-size: 12px; color: #888b8d; margin-bottom: 20px; }
+    .host-modal input {
+      width: 100%; font-size: 14px; padding: 11px 13px;
+      border: 1.5px solid #d0d0d0; border-radius: 4px;
+      margin-bottom: 10px; box-sizing: border-box; font-family: Arial, sans-serif;
+    }
+    .host-modal input:focus { border-color: #3f9c35; outline: none; }
+    .btn-host-login {
+      width: 100%; padding: 12px;
+      background: #3f9c35; color: white; border: none; border-radius: 4px;
+      font-size: 14px; font-weight: bold; font-family: Arial, sans-serif;
+      cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .btn-host-login:hover { background: #337a2a; }
+    .btn-host-login:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-annuleer {
+      width: 100%; padding: 9px; background: none; border: none;
+      color: #888b8d; font-size: 13px; cursor: pointer; margin-top: 8px;
+      font-family: Arial, sans-serif;
+    }
+    .btn-annuleer:hover { color: #555; }
+    #host-error {
+      background: #fdecea; color: #c0392b; padding: 9px 12px;
+      border-radius: 4px; font-size: 12px; margin-bottom: 10px;
+      display: none; border-left: 3px solid #c0392b;
+    }
+
+    /* Copyright */
+    .rsm-copyright {
+      text-align: center; margin-top: 20px;
+      color: #888b8d; font-size: 11px;
     }
   </style>
 </head>
 <body>
-  <div class="login-box">
-    <div class="login-logo">
-      <span class="trophy">🏆</span>
-      <h1>WK <span>Quiz</span> 2026</h1>
-      <p>Voorspel, scoor en win!</p>
+  <div class="top-bar"></div>
+
+  <div class="login-wrapper">
+    <div class="rsm-header">
+      <img src="./images/rsm-logo-white.png" alt="RSM Logo">
     </div>
 
-    <div id="error-msg"></div>
-
-    <div id="form-container">
-      <div class="form-group">
-        <label for="email">Jouw e-mailadres</label>
-        <input type="email" id="email" placeholder="voornaam@rsmbelgium.be" autocomplete="email">
+    <div class="login-box">
+      <div class="login-hero">
+        <img src="./images/wk2026-logo.webp" alt="WK 2026 Logo" class="wk-logo">
+        <div class="login-hero-tekst">
+          <h1>WK <span>Quiz</span><br>2026</h1>
+          <p>Voorspel · Scoor · Win</p>
+        </div>
       </div>
-      <button class="btn-login" id="btn-send" onclick="verstuurMagicLink()">
-        ✉️ Stuur inloglink
-      </button>
-      <p class="info-text">
-        Je ontvangt een link per e-mail.<br>
-        Klik op de link om in te loggen — geen wachtwoord nodig.
-      </p>
-    </div>
 
-    <div class="success-box" id="success-box">
-      <div class="check">📬</div>
-      <h3>Link verzonden!</h3>
-      <p>Controleer je inbox en klik op de link om in te loggen.</p>
-    </div>
+      <div class="login-body">
+        <div id="error-msg"></div>
 
-    <div class="onderaan">
-      <div class="scoreboard-link">
-        <a href="./scoreboard.html">🏅 Live scoreboard →</a>
+        <div id="form-container">
+          <div class="form-group">
+            <label for="email">Jouw RSM e-mailadres</label>
+            <input type="email" id="email" placeholder="voornaam@rsmbelgium.be" autocomplete="email">
+          </div>
+          <button class="btn-login" id="btn-send" onclick="verstuurMagicLink()">
+            Stuur inloglink
+          </button>
+          <p class="info-text">
+            Je ontvangt een link per e-mail om in te loggen.<br>
+            Geen wachtwoord nodig.
+          </p>
+        </div>
+
+        <div class="success-box" id="success-box">
+          <div class="icon">📬</div>
+          <h3>Link verzonden!</h3>
+          <p>Controleer je inbox en klik op de link.</p>
+        </div>
       </div>
-      <span class="host-tag">👑 Host: gebruik jouw RSM e-mail</span>
+
+      <div class="login-footer">
+        <div class="scoreboard-link">
+          <a href="./scoreboard.html">🏅 Live scoreboard →</a>
+        </div>
+        <button class="btn-host" onclick="document.getElementById('host-overlay').classList.add('open')">
+          Host login
+        </button>
+      </div>
+    </div>
+
+    <div class="rsm-copyright">© RSM Belgium · WK Quiz 2026</div>
+  </div>
+
+  <!-- Host modal -->
+  <div class="host-overlay" id="host-overlay">
+    <div class="host-modal">
+      <h3>Host login</h3>
+      <p>Enkel voor de quizmaster.</p>
+      <div id="host-error"></div>
+      <input type="email" id="host-email" placeholder="E-mailadres" autocomplete="email">
+      <input type="password" id="host-wachtwoord" placeholder="Wachtwoord" autocomplete="current-password">
+      <button class="btn-host-login" id="btn-host-login" onclick="hostInloggen()">Inloggen</button>
+      <button class="btn-annuleer" onclick="document.getElementById('host-overlay').classList.remove('open')">Annuleren</button>
     </div>
   </div>
 
@@ -117,8 +267,8 @@
         const { data: { session } } = await db.auth.getSession();
         if (!session) return;
         const { data: profile } = await db.from('profiles').select('is_host').eq('id', session.user.id).single();
-        window.location.href = profile?.is_host ? './pages/host-dashboard.html' : './pages/deelnemer.html';
-      } catch(e) { console.log('Sessie check:', e); }
+        window.location.href = profile?.is_host ? '/rsm-wk-2026/pages/host-dashboard.html' : '/rsm-wk-2026/pages/deelnemer.html';
+      } catch(e) {}
     }
 
     async function verstuurMagicLink() {
@@ -126,36 +276,59 @@
       const btn = document.getElementById('btn-send');
       const errorEl = document.getElementById('error-msg');
       errorEl.style.display = 'none';
-
       if (!email || !email.includes('@')) {
         errorEl.textContent = '⚠️ Vul een geldig e-mailadres in.';
-        errorEl.style.display = 'block';
-        return;
+        errorEl.style.display = 'block'; return;
       }
-
-      btn.disabled = true;
-      btn.textContent = 'Verzenden...';
-
+      btn.disabled = true; btn.textContent = 'Verzenden...';
       const { error } = await db.auth.signInWithOtp({
-        email: email,
+        email,
         options: { emailRedirectTo: 'https://vesquen95.github.io/rsm-wk-2026/auth-callback.html' }
       });
-
       if (error) {
-        errorEl.textContent = '❌ Fout: ' + error.message;
+        errorEl.textContent = '❌ ' + error.message;
         errorEl.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = '✉️ Stuur inloglink';
+        btn.disabled = false; btn.textContent = 'Stuur inloglink';
       } else {
         document.getElementById('form-container').style.display = 'none';
         document.getElementById('success-box').style.display = 'block';
       }
     }
 
+    async function hostInloggen() {
+      const email = document.getElementById('host-email').value.trim();
+      const wachtwoord = document.getElementById('host-wachtwoord').value;
+      const btn = document.getElementById('btn-host-login');
+      const errorEl = document.getElementById('host-error');
+      errorEl.style.display = 'none';
+      if (!email || !wachtwoord) {
+        errorEl.textContent = '⚠️ Vul e-mail en wachtwoord in.';
+        errorEl.style.display = 'block'; return;
+      }
+      btn.disabled = true; btn.textContent = 'Inloggen...';
+      const { data, error } = await db.auth.signInWithPassword({ email, password: wachtwoord });
+      if (error) {
+        errorEl.textContent = '❌ Fout wachtwoord of e-mailadres.';
+        errorEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Inloggen'; return;
+      }
+      const { data: profile } = await db.from('profiles').select('is_host').eq('id', data.user.id).single();
+      if (!profile?.is_host) {
+        await db.auth.signOut();
+        errorEl.textContent = '❌ Geen hostrechten.';
+        errorEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Inloggen'; return;
+      }
+      window.location.href = '/rsm-wk-2026/pages/host-dashboard.html';
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       checkSession();
-      document.getElementById('email').addEventListener('keypress', e => {
-        if (e.key === 'Enter') verstuurMagicLink();
+      document.getElementById('email').addEventListener('keypress', e => { if (e.key === 'Enter') verstuurMagicLink(); });
+      document.getElementById('host-wachtwoord').addEventListener('keypress', e => { if (e.key === 'Enter') hostInloggen(); });
+      document.getElementById('host-overlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('host-overlay'))
+          document.getElementById('host-overlay').classList.remove('open');
       });
     });
   </script>
