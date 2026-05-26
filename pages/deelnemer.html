@@ -33,6 +33,8 @@
   <nav class="navbar">
     <a href="../index.html" class="navbar-brand">🏆 WK <span>Quiz</span> 2026</a>
     <div class="navbar-user">
+      <a href="../scoreboard.html" class="btn-logout">🏅 Scoreboard</a>
+      <a href="./wedstrijden.html" class="btn-logout">📅 Wedstrijden</a>
       <span id="nav-naam">Laden...</span>
       <button class="btn-logout" onclick="uitloggen()">Uitloggen</button>
     </div>
@@ -68,12 +70,12 @@
 
     async function init() {
       const { data: { session } } = await db.auth.getSession();
-      if (!session) { window.location.href = '../index.html'; return; }
+      if (!session) { window.location.href = '/rsm-wk-2026/index.html'; return; }
 
       gebruikerId = session.user.id;
       const { data: profile } = await db.from('profiles').select('display_name, is_host').eq('id', gebruikerId).single();
 
-      if (profile?.is_host) { window.location.href = './host-dashboard.html'; return; }
+      if (profile?.is_host) { window.location.href = '/rsm-wk-2026/pages/host-dashboard.html'; return; }
 
       const naam = profile?.display_name || session.user.email;
       document.getElementById('nav-naam').textContent = naam;
@@ -273,7 +275,7 @@
 
     async function uitloggen() {
       await db.auth.signOut();
-      window.location.href = '../index.html';
+      window.location.href = '/rsm-wk-2026/index.html';
     }
 
     init();
