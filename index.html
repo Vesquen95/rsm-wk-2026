@@ -237,26 +237,10 @@
         <div class="scoreboard-link">
           <a href="./scoreboard.html">🏅 Live scoreboard →</a>
         </div>
-        <button class="btn-host" onclick="document.getElementById('host-overlay').classList.add('open')">
-          Host login
-        </button>
       </div>
     </div>
 
     <div class="rsm-copyright">© RSM Belgium · WK Quiz 2026</div>
-  </div>
-
-  <!-- Host modal -->
-  <div class="host-overlay" id="host-overlay">
-    <div class="host-modal">
-      <h3>Host login</h3>
-      <p>Enkel voor de quizmaster.</p>
-      <div id="host-error"></div>
-      <input type="email" id="host-email" placeholder="E-mailadres" autocomplete="email">
-      <input type="password" id="host-wachtwoord" placeholder="Wachtwoord" autocomplete="current-password">
-      <button class="btn-host-login" id="btn-host-login" onclick="hostInloggen()">Inloggen</button>
-      <button class="btn-annuleer" onclick="document.getElementById('host-overlay').classList.remove('open')">Annuleren</button>
-    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -295,41 +279,9 @@
       }
     }
 
-    async function hostInloggen() {
-      const email = document.getElementById('host-email').value.trim();
-      const wachtwoord = document.getElementById('host-wachtwoord').value;
-      const btn = document.getElementById('btn-host-login');
-      const errorEl = document.getElementById('host-error');
-      errorEl.style.display = 'none';
-      if (!email || !wachtwoord) {
-        errorEl.textContent = '⚠️ Vul e-mail en wachtwoord in.';
-        errorEl.style.display = 'block'; return;
-      }
-      btn.disabled = true; btn.textContent = 'Inloggen...';
-      const { data, error } = await db.auth.signInWithPassword({ email, password: wachtwoord });
-      if (error) {
-        errorEl.textContent = '❌ Fout wachtwoord of e-mailadres.';
-        errorEl.style.display = 'block';
-        btn.disabled = false; btn.textContent = 'Inloggen'; return;
-      }
-      const { data: profile } = await db.from('profiles').select('is_host').eq('id', data.user.id).single();
-      if (!profile?.is_host) {
-        await db.auth.signOut();
-        errorEl.textContent = '❌ Geen hostrechten.';
-        errorEl.style.display = 'block';
-        btn.disabled = false; btn.textContent = 'Inloggen'; return;
-      }
-      window.location.href = '/rsm-wk-2026/pages/host-dashboard.html';
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
       checkSession();
       document.getElementById('email').addEventListener('keypress', e => { if (e.key === 'Enter') verstuurMagicLink(); });
-      document.getElementById('host-wachtwoord').addEventListener('keypress', e => { if (e.key === 'Enter') hostInloggen(); });
-      document.getElementById('host-overlay').addEventListener('click', e => {
-        if (e.target === document.getElementById('host-overlay'))
-          document.getElementById('host-overlay').classList.remove('open');
-      });
     });
   </script>
 </body>
