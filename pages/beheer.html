@@ -152,7 +152,7 @@
 </head>
 <body>
   <nav class="navbar">
-    <a href="../index.html" class="navbar-brand">🏆 WK <span>Quiz</span> 2026</a>
+    <a href="../index.html" class="navbar-brand"><img src="../images/rsm-logo-white.png" alt="RSM"><span class="quiz-label">WK Quiz 2026</span></a>
     <div class="navbar-user">
       <span style="color:#f39c12;font-weight:700">👑 HOST</span>
       <a href="./host-dashboard.html" class="btn-logout">← Dashboard</a>
@@ -198,9 +198,9 @@
 
     async function init() {
       const { data: { session } } = await db.auth.getSession();
-      if (!session) { window.location.href = '../index.html'; return; }
+      if (!session) { window.location.href = '/rsm-wk-2026/index.html'; return; }
       const { data: profile } = await db.from('profiles').select('is_host').eq('id', session.user.id).single();
-      if (!profile?.is_host) { window.location.href = './deelnemer.html'; return; }
+      if (!profile?.is_host) { window.location.href = '/rsm-wk-2026/pages/deelnemer.html'; return; }
       await laadDeelnemers();
     }
 
@@ -409,7 +409,7 @@
 
     async function uitloggen() {
       await db.auth.signOut();
-      window.location.href = '../index.html';
+      window.location.href = '/rsm-wk-2026/index.html';
     }
 
     init();
