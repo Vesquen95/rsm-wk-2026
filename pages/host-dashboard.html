@@ -104,7 +104,7 @@
   <div class="modal-overlay" id="ronde-modal">
     <div class="modal">
       <h3 id="modal-ronde-titel">Nieuwe ronde</h3>
-      <input type="number" id="ronde-id-edit">
+      <input type="hidden" id="ronde-id-edit">
       <div class="form-group">
         <label>Naam</label>
         <input type="text" id="ronde-naam" placeholder="bv. Groepsfase speeldag 1">
@@ -143,7 +143,7 @@
   <div class="modal-overlay" id="vraag-modal">
     <div class="modal">
       <h3>Vraag toevoegen</h3>
-      <input type="number" id="vraag-ronde-id">
+      <input type="hidden" id="vraag-ronde-id">
       <div class="form-group">
         <label>Type vraag</label>
         <select id="vraag-type" onchange="wisselVraagType()">
@@ -194,9 +194,9 @@
 
     async function init() {
       const { data: { session } } = await db.auth.getSession();
-      if (!session) { window.location.href = '../index.html'; return; }
+      if (!session) { window.location.href = '/rsm-wk-2026/index.html'; return; }
       const { data: profile } = await db.from('profiles').select('is_host').eq('id', session.user.id).single();
-      if (!profile?.is_host) { window.location.href = './deelnemer.html'; return; }
+      if (!profile?.is_host) { window.location.href = '/rsm-wk-2026/pages/deelnemer.html'; return; }
       await laadTeams();
       await laadStats();
       await laadRondes();
@@ -308,13 +308,21 @@
       };
       if (!data.name) { alert('Vul een naam in!'); return; }
       if (id) {
-        await db.from('rounds').update(data).eq('id', id);
+        const { error } = await db.from('rounds').update(data).eq('id', id);
+        if (error) { alert('❌ Fout bij opslaan: ' + error.message); return; }
         document.getElementById('vragen-sectie').style.display = 'block';
         huidigeRondeId = id;
         await laadVragenVanRonde(id);
       } else {
-        const { data: nr } = await db.from('rounds').insert(data).select().single();
-        if (nr) { huidigeRondeId = nr.id; document.getElementById('ronde-id-edit').value = nr.id; document.getElementById('vragen-sectie').style.display = 'block'; await laadVragenVanRonde(nr.id); }
+        const { data: nr, error } = await db.from('rounds').insert(data).select().single();
+        if (error) { alert('❌ Fout bij aanmaken: ' + error.message); return; }
+        if (nr) {
+          huidigeRondeId = nr.id;
+          document.getElementById('ronde-id-edit').value = nr.id;
+          document.getElementById('vragen-sectie').style.display = 'block';
+          await laadVragenVanRonde(nr.id);
+          alert('✅ Ronde aangemaakt! Je kan nu vragen toevoegen.');
+        }
       }
       await laadRondes(); await laadStats(); await laadRondesVoorScoren();
     }
@@ -358,7 +366,9 @@
         sort_order: Date.now()
       };
       if (!data.question_text) { alert('Vul een vraagtekst in!'); return; }
-      await db.from('questions').insert(data);
+      if (!data.round_id) { alert('❌ Geen ronde geselecteerd. Sla eerst de ronde op.'); return; }
+      const { error } = await db.from('questions').insert(data);
+      if (error) { alert('❌ Fout bij opslaan vraag: ' + error.message); return; }
       sluitModal('vraag-modal');
       await laadVragenVanRonde(huidigeRondeId);
       await laadStats();
@@ -450,7 +460,7 @@
       m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
 
-    async function uitloggen() { await db.auth.signOut(); window.location.href = '../index.html'; }
+    async function uitloggen() { await db.auth.signOut(); window.location.href = '/rsm-wk-2026/index.html'; }
 
     init();
   </script>
