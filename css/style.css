@@ -1,92 +1,100 @@
 /* ================================================
-   WK QUIZ 2026 - Globale stijlen
+   RSM WK QUIZ 2026 - Huisstijl
+   RSM kleuren: Groen #3f9c35 | Blauw #009cde | Grijs #888b8d
+   Font: Arial / system-ui
    ================================================ */
 
 :root {
-  --wk-rood: #c0392b;
-  --wk-goud: #f39c12;
-  --wk-donker: #1a1a2e;
-  --wk-blauw: #16213e;
-  --wk-accent: #0f3460;
-  --wk-groen: #27ae60;
-  --radius: 12px;
-  --radius-sm: 8px;
-  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --rsm-groen:   #3f9c35;
+  --rsm-blauw:   #009cde;
+  --rsm-grijs:   #888b8d;
+  --rsm-zwart:   #000000;
+  --rsm-donker:  #1a1a1a;
+  --rsm-lichtgrijs: #f4f4f4;
+  --rsm-border:  #e0e0e0;
+
+  --radius:    10px;
+  --radius-sm: 6px;
+  --shadow:    0 2px 12px rgba(0,0,0,0.08);
   --transition: 0.2s ease;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: #f5f6fa;
-  color: #2c3e50;
+  font-family: Arial, 'Helvetica Neue', sans-serif;
+  background: #f4f4f4;
+  color: #1a1a1a;
   min-height: 100vh;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.6;
 }
 
 /* ---- NAVIGATIE ---- */
 .navbar {
-  background: linear-gradient(135deg, var(--wk-donker), var(--wk-accent));
+  background: #000000;
   color: white;
   padding: 0 24px;
   height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 3px solid var(--rsm-blauw);
 }
 
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
+  gap: 12px;
   text-decoration: none;
   color: white;
 }
 
-.navbar-brand span { color: var(--wk-goud); }
+.navbar-brand img {
+  height: 32px;
+  width: auto;
+}
+
+.navbar-brand .quiz-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: rgba(255,255,255,0.7);
+  border-left: 1px solid rgba(255,255,255,0.2);
+  padding-left: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
 
 .navbar-user {
   display: flex;
   align-items: center;
-  gap: 16px;
-  font-size: 14px;
-  color: rgba(255,255,255,0.85);
+  gap: 12px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
 }
 
 .btn-logout {
-  background: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.1);
   color: white;
   border: 1px solid rgba(255,255,255,0.2);
   padding: 6px 14px;
-  border-radius: 20px;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 13px;
+  font-family: Arial, sans-serif;
   transition: var(--transition);
   text-decoration: none;
+  font-weight: bold;
 }
-.btn-logout:hover { background: rgba(255,255,255,0.2); }
+.btn-logout:hover { background: var(--rsm-blauw); border-color: var(--rsm-blauw); }
 
 /* ---- LAYOUT ---- */
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 32px 20px;
-}
-
-.container-wide {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 32px 20px;
-}
+.container { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+.container-wide { max-width: 1200px; margin: 0 auto; padding: 32px 20px; }
 
 /* ---- KAARTEN ---- */
 .card {
@@ -95,6 +103,7 @@ body {
   padding: 24px;
   box-shadow: var(--shadow);
   margin-bottom: 20px;
+  border: 1px solid var(--rsm-border);
 }
 
 .card-header {
@@ -102,14 +111,14 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--rsm-blauw);
 }
 
 .card-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--wk-donker);
+  font-size: 17px;
+  font-weight: bold;
+  color: var(--rsm-donker);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -120,60 +129,41 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 20px;
+  padding: 9px 18px;
   border-radius: var(--radius-sm);
   border: none;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
   cursor: pointer;
   transition: var(--transition);
   text-decoration: none;
 }
 
-.btn-primary {
-  background: var(--wk-accent);
-  color: white;
-}
-.btn-primary:hover { background: #0a2a4e; transform: translateY(-1px); }
+.btn-primary { background: var(--rsm-blauw); color: white; }
+.btn-primary:hover { background: #007ab5; transform: translateY(-1px); }
 
-.btn-success {
-  background: var(--wk-groen);
-  color: white;
-}
-.btn-success:hover { background: #219a52; transform: translateY(-1px); }
+.btn-success { background: var(--rsm-groen); color: white; }
+.btn-success:hover { background: #337a2a; transform: translateY(-1px); }
 
-.btn-danger {
-  background: var(--wk-rood);
-  color: white;
-}
-.btn-danger:hover { background: #a93226; transform: translateY(-1px); }
+.btn-danger { background: #c0392b; color: white; }
+.btn-danger:hover { background: #a93226; }
 
-.btn-secondary {
-  background: #ecf0f1;
-  color: #2c3e50;
-}
-.btn-secondary:hover { background: #dde4e6; }
+.btn-secondary { background: #e8e8e8; color: #1a1a1a; }
+.btn-secondary:hover { background: #d4d4d4; }
 
-.btn-gold {
-  background: var(--wk-goud);
-  color: white;
-}
-.btn-gold:hover { background: #d68910; transform: translateY(-1px); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-lg { padding: 13px 26px; font-size: 15px; }
 
-.btn-sm { padding: 6px 12px; font-size: 13px; }
-.btn-lg { padding: 14px 28px; font-size: 16px; }
-
-/* ---- FORMULIER ELEMENTEN ---- */
-.form-group {
-  margin-bottom: 18px;
-}
+/* ---- FORMULIER ---- */
+.form-group { margin-bottom: 16px; }
 
 label {
   display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: #5a6a7a;
-  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--rsm-grijs);
+  margin-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -182,282 +172,196 @@ input[type="text"],
 input[type="email"],
 input[type="number"],
 input[type="datetime-local"],
+input[type="date"],
+input[type="password"],
 select,
 textarea {
   width: 100%;
-  padding: 10px 14px;
-  border: 1.5px solid #dde4e6;
+  padding: 9px 12px;
+  border: 1.5px solid #d0d0d0;
   border-radius: var(--radius-sm);
-  font-size: 15px;
-  color: #2c3e50;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  color: #1a1a1a;
   transition: var(--transition);
   background: white;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--wk-accent);
-  box-shadow: 0 0 0 3px rgba(15,52,96,0.08);
+  border-color: var(--rsm-blauw);
+  box-shadow: 0 0 0 3px rgba(0,156,222,0.1);
 }
 
 /* ---- BADGES ---- */
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
-.badge-open { background: #eafaf1; color: #27ae60; }
+.badge-open    { background: #e8f5e5; color: var(--rsm-groen); }
 .badge-gesloten { background: #fdecea; color: #c0392b; }
-.badge-punten-5 { background: #fff3cd; color: #856404; }
-.badge-punten-10 { background: #cfe2ff; color: #084298; }
-.badge-punten-20 { background: #d1e7dd; color: #0f5132; }
+.badge-punten-5  { background: #fff3cd; color: #856404; }
+.badge-punten-10 { background: #e3f4fc; color: var(--rsm-blauw); }
+.badge-punten-20 { background: #e8f5e5; color: var(--rsm-groen); }
 
 /* ---- MELDINGEN ---- */
 .alert {
-  padding: 12px 16px;
+  padding: 11px 15px;
   border-radius: var(--radius-sm);
-  margin-bottom: 16px;
-  font-size: 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   gap: 10px;
+  border-left: 4px solid;
 }
-.alert-success { background: #d1eddf; color: #155724; }
-.alert-error { background: #fdecea; color: #721c24; }
-.alert-info { background: #cfe2ff; color: #084298; }
-.alert-warning { background: #fff3cd; color: #664d03; }
+.alert-success { background: #e8f5e5; color: #1e5c18; border-color: var(--rsm-groen); }
+.alert-error   { background: #fdecea; color: #721c24; border-color: #c0392b; }
+.alert-info    { background: #e3f4fc; color: #004d70; border-color: var(--rsm-blauw); }
+.alert-warning { background: #fff8e1; color: #664d03; border-color: #f39c12; }
 
 /* ---- LAADSCHERM ---- */
 .loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px;
-  color: #7f8c8d;
-  gap: 12px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 48px; color: var(--rsm-grijs); gap: 12px;
 }
-
 .spinner {
-  width: 24px;
-  height: 24px;
-  border: 3px solid #ecf0f1;
-  border-top-color: var(--wk-accent);
+  width: 22px; height: 22px;
+  border: 3px solid #e0e0e0;
+  border-top-color: var(--rsm-blauw);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
-
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ---- DEADLINE INDICATOR ---- */
+/* ---- DEADLINE ---- */
 .deadline-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: #f8f9fa;
-  color: #6c757d;
-  border: 1px solid #dee2e6;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; padding: 3px 9px; border-radius: 3px;
+  background: #f4f4f4; color: var(--rsm-grijs);
+  border: 1px solid #d0d0d0;
 }
-
-.deadline-tag.verlopen { background: #fdecea; color: var(--wk-rood); border-color: #f5c6cb; }
-.deadline-tag.bijna { background: #fff3cd; color: #856404; border-color: #ffc107; }
+.deadline-tag.verlopen { background: #fdecea; color: #c0392b; border-color: #f5c6cb; }
+.deadline-tag.bijna    { background: #fff8e1; color: #856404; border-color: #f39c12; }
 
 /* ---- 1/X/2 KNOPPEN ---- */
-.result-buttons {
-  display: flex;
-  gap: 10px;
-}
-
+.result-buttons { display: flex; gap: 8px; }
 .result-btn {
-  flex: 1;
-  padding: 12px;
-  border: 2px solid #dde4e6;
+  flex: 1; padding: 11px;
+  border: 2px solid #d0d0d0;
   border-radius: var(--radius-sm);
   background: white;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: var(--transition);
-  text-align: center;
+  font-size: 17px; font-weight: bold; font-family: Arial, sans-serif;
+  cursor: pointer; transition: var(--transition); text-align: center;
 }
-
-.result-btn:hover { border-color: var(--wk-accent); background: #f0f4ff; }
-.result-btn.selected-1 { border-color: var(--wk-groen); background: #eafaf1; color: var(--wk-groen); }
-.result-btn.selected-X { border-color: var(--wk-goud); background: #fef9e7; color: #d4810c; }
-.result-btn.selected-2 { border-color: var(--wk-rood); background: #fdecea; color: var(--wk-rood); }
+.result-btn:hover { border-color: var(--rsm-blauw); background: #e3f4fc; }
+.result-btn.selected-1 { border-color: var(--rsm-groen); background: #e8f5e5; color: var(--rsm-groen); }
+.result-btn.selected-X { border-color: var(--rsm-grijs); background: #f4f4f4; color: #555; }
+.result-btn.selected-2 { border-color: var(--rsm-blauw); background: #e3f4fc; color: var(--rsm-blauw); }
 
 /* ---- SCORE INPUT ---- */
-.score-input-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
+.score-input-group { display: flex; align-items: center; gap: 10px; }
 .score-input-group input {
-  width: 70px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: 700;
-  padding: 10px 8px;
+  width: 66px; text-align: center;
+  font-size: 20px; font-weight: bold; padding: 9px 6px;
 }
+.score-separator { font-size: 22px; font-weight: bold; color: #ccc; }
 
-.score-separator {
-  font-size: 24px;
-  font-weight: 700;
-  color: #bdc3c7;
-}
-
-/* ---- TEAM DISPLAY ---- */
+/* ---- WEDSTRIJD ---- */
 .match-teams {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; font-size: 15px; font-weight: bold; margin-bottom: 12px;
 }
-
-.team-name { color: var(--wk-donker); }
+.team-name { color: var(--rsm-donker); }
 .vs-badge {
-  background: var(--wk-accent);
-  color: white;
-  padding: 3px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 700;
+  background: var(--rsm-blauw); color: white;
+  padding: 2px 9px; border-radius: 3px;
+  font-size: 11px; font-weight: bold; letter-spacing: 0.5px;
 }
 
 /* ---- VRAAG KAART ---- */
 .question-card {
-  background: white;
-  border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 16px;
-  border: 1.5px solid #e8ecef;
-  transition: var(--transition);
+  background: white; border-radius: var(--radius);
+  padding: 18px; margin-bottom: 14px;
+  border: 1.5px solid var(--rsm-border); transition: var(--transition);
 }
-
-.question-card:hover { border-color: #c8d0d8; }
-.question-card.beantwoord { border-left: 4px solid var(--wk-groen); }
+.question-card:hover { border-color: var(--rsm-blauw); }
+.question-card.beantwoord { border-left: 4px solid var(--rsm-groen); }
 
 .question-number {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--wk-accent);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 6px;
+  font-size: 11px; font-weight: bold; color: var(--rsm-blauw);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;
 }
-
 .question-text {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--wk-donker);
-  margin-bottom: 14px;
+  font-size: 14px; font-weight: bold; color: var(--rsm-donker); margin-bottom: 12px;
 }
 
-/* ---- SCOREBOARD ---- */
-.leaderboard-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
+/* ---- SCOREBOARD TABEL ---- */
+.leaderboard-table { width: 100%; border-collapse: collapse; }
 .leaderboard-table th {
-  text-align: left;
-  padding: 12px 16px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #7f8c8d;
-  background: #f8f9fa;
-  border-bottom: 2px solid #ecf0f1;
+  text-align: left; padding: 10px 14px;
+  font-size: 11px; font-weight: bold; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--rsm-grijs);
+  background: #f4f4f4; border-bottom: 2px solid var(--rsm-blauw);
 }
-
 .leaderboard-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 15px;
+  padding: 12px 14px; border-bottom: 1px solid #ebebeb; font-size: 14px;
 }
-
-.leaderboard-table tr:hover td { background: #fafbfc; }
+.leaderboard-table tr:hover td { background: #f9f9f9; }
 
 .rank-badge {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
+  width: 30px; height: 30px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: bold; font-size: 13px;
 }
-
-.rank-1 { background: #ffd700; color: #7d6608; }
-.rank-2 { background: #c0c0c0; color: #5a5a5a; }
-.rank-3 { background: #cd7f32; color: #5d3a1a; }
-.rank-other { background: #ecf0f1; color: #7f8c8d; }
-
-.points-total {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--wk-accent);
-}
+.rank-1 { background: #ffd700; color: #5a4200; }
+.rank-2 { background: #c0c0c0; color: #3a3a3a; }
+.rank-3 { background: #cd7f32; color: #3a1a00; }
+.rank-other { background: #ebebeb; color: var(--rsm-grijs); }
+.points-total { font-size: 17px; font-weight: bold; color: var(--rsm-blauw); }
 
 /* ---- RONDE TABS ---- */
-.round-tabs {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-}
-
+.round-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; }
 .round-tab {
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1.5px solid #dde4e6;
-  background: white;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  color: #5a6a7a;
+  padding: 7px 15px; border-radius: 3px;
+  border: 1.5px solid #d0d0d0; background: white;
+  font-size: 12px; font-weight: bold; font-family: Arial, sans-serif;
+  cursor: pointer; transition: var(--transition); color: var(--rsm-grijs);
+  text-transform: uppercase; letter-spacing: 0.3px;
 }
-
-.round-tab:hover { border-color: var(--wk-accent); color: var(--wk-accent); }
-.round-tab.active { background: var(--wk-accent); color: white; border-color: var(--wk-accent); }
+.round-tab:hover { border-color: var(--rsm-blauw); color: var(--rsm-blauw); }
+.round-tab.active { background: var(--rsm-blauw); color: white; border-color: var(--rsm-blauw); }
 
 /* ---- PAGINATITEL ---- */
-.page-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
+.page-header { text-align: center; margin-bottom: 28px; }
 .page-header h1 {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--wk-donker);
-  margin-bottom: 6px;
+  font-size: 26px; font-weight: bold; color: var(--rsm-donker); margin-bottom: 5px;
 }
+.page-header p { color: var(--rsm-grijs); font-size: 14px; }
 
-.page-header p {
-  color: #7f8c8d;
-  font-size: 15px;
+/* ---- RSM ACCENT LIJN ---- */
+.rsm-accent-bar {
+  height: 4px;
+  background: linear-gradient(to right, #888b8d 10%, #3f9c35 30%, #009cde 60%);
+  width: 100%;
 }
 
 /* ---- RESPONSIEF ---- */
 @media (max-width: 600px) {
-  .container { padding: 16px; }
-  .card { padding: 16px; }
-  .navbar-brand { font-size: 17px; }
+  .container { padding: 14px; }
+  .card { padding: 14px; }
+  .navbar { padding: 0 14px; }
+  .navbar-brand img { height: 26px; }
+  .navbar-brand .quiz-label { display: none; }
   .result-buttons { flex-direction: column; }
-  .match-teams { font-size: 14px; }
-  .score-input-group input { width: 60px; font-size: 18px; }
+  .match-teams { font-size: 13px; }
+  .score-input-group input { width: 54px; font-size: 17px; }
+  .navbar-user gap: 8px;
 }
