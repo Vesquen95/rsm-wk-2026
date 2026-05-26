@@ -39,6 +39,28 @@
     .score-tabel th { background: #f8f9fa; padding: 10px 12px; text-align: left; font-size: 12px; text-transform: uppercase; color: #7f8c8d; }
     .score-tabel td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
     .gescoord { border-left: 3px solid #27ae60; }
+    .uitslag-rij {
+      display: grid; grid-template-columns: 1fr 120px 1fr auto;
+      align-items: center; gap: 10px;
+      padding: 12px 14px; border: 1px solid #e8ecef;
+      border-radius: 8px; margin-bottom: 8px; font-size: 14px;
+    }
+    .uitslag-rij.gespeeld { border-left: 3px solid #27ae60; background: #f8fff9; }
+    .uitslag-team { font-weight: 600; color: #1a1a2e; }
+    .uitslag-team.thuis { text-align: right; }
+    .uitslag-score-groep {
+      display: flex; align-items: center; gap: 6px; justify-content: center;
+    }
+    .uitslag-score-groep input {
+      width: 46px; text-align: center; padding: 7px 4px;
+      font-size: 16px; font-weight: 700;
+    }
+    .uitslag-sep { font-size: 18px; font-weight: 700; color: #bdc3c7; }
+    .dag-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: #7f8c8d;
+      margin: 16px 0 8px; padding-left: 2px;
+    }
   </style>
 </head>
 <body>
@@ -68,6 +90,7 @@
     <div class="tab-nav">
       <button class="tab-btn active" onclick="toonTab('rondes')">📋 Rondes</button>
       <button class="tab-btn" onclick="toonTab('scoren')">✅ Scoren</button>
+      <button class="tab-btn" onclick="toonTab('uitslagen')">⚽ Uitslagen</button>
       <button class="tab-btn" onclick="toonTab('deelnemers')">👥 Deelnemers</button>
     </div>
 
@@ -96,6 +119,30 @@
       <div class="card">
         <div class="card-header"><div class="card-title">👥 Deelnemers</div></div>
         <div id="deelnemers-lijst"><div class="loading"><div class="spinner"></div> Laden...</div></div>
+      </div>
+    </div>
+
+    <!-- TAB: Uitslagen -->
+    <div id="tab-uitslagen" style="display:none">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚽ Wedstrijduitslagen invoeren</div>
+        </div>
+        <div class="form-group">
+          <label>Selecteer speeldag / fase</label>
+          <select id="uitslag-fase-select" onchange="laadWedstrijdenVoorUitslag()">
+            <option value="">-- Kies speeldag --</option>
+            <option value="groep1">Speeldag 1 (11-18 juni)</option>
+            <option value="groep2">Speeldag 2 (19-25 juni)</option>
+            <option value="groep3">Speeldag 3 (27 juni - 8 juli)</option>
+            <option value="ro32">1/16 finale (11-18 juli)</option>
+            <option value="ro16">1/8 finale (19-26 juli)</option>
+            <option value="kwart">Kwartfinale (9-12 aug)</option>
+            <option value="halve">Halve finale (15-16 aug)</option>
+            <option value="finale">Finale (19 juli)</option>
+          </select>
+        </div>
+        <div id="uitslagen-container"></div>
       </div>
     </div>
   </div>
@@ -251,8 +298,8 @@
     }
 
     function toonTab(naam) {
-      ['rondes','scoren','deelnemers'].forEach(t => { document.getElementById('tab-'+t).style.display = t===naam?'block':'none'; });
-      document.querySelectorAll('.tab-btn').forEach((b,i) => { b.classList.toggle('active', ['rondes','scoren','deelnemers'][i]===naam); });
+      ['rondes','scoren','uitslagen','deelnemers'].forEach(t => { document.getElementById('tab-'+t).style.display = t===naam?'block':'none'; });
+      document.querySelectorAll('.tab-btn').forEach((b,i) => { b.classList.toggle('active', ['rondes','scoren','uitslagen','deelnemers'][i]===naam); });
     }
 
     function openRondeModal() {
@@ -459,6 +506,175 @@
     document.querySelectorAll('.modal-overlay').forEach(m => {
       m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
+
+    // ---- UITSLAGEN ----
+    const wedstrijdenData = {
+      groep1: [
+        {id:'A_SD1_1',datum:'11/06',thuis:'Mexico',uit:'Zuid-Afrika',groep:'A'},
+        {id:'A_SD1_2',datum:'12/06',thuis:'Zuid-Korea',uit:'Tsjechië',groep:'A'},
+        {id:'B_SD1_1',datum:'12/06',thuis:'Canada',uit:'Bosnië-Herzegovina',groep:'B'},
+        {id:'D_SD1_1',datum:'13/06',thuis:'Verenigde Staten',uit:'Paraguay',groep:'D'},
+        {id:'B_SD1_2',datum:'13/06',thuis:'Qatar',uit:'Zwitserland',groep:'B'},
+        {id:'C_SD1_1',datum:'14/06',thuis:'Brazilië',uit:'Marokko',groep:'C'},
+        {id:'C_SD1_2',datum:'14/06',thuis:'Haïti',uit:'Schotland',groep:'C'},
+        {id:'D_SD1_2',datum:'14/06',thuis:'Australië',uit:'Turkije',groep:'D'},
+        {id:'E_SD1_1',datum:'14/06',thuis:'Duitsland',uit:'Curaçao',groep:'E'},
+        {id:'F_SD1_1',datum:'14/06',thuis:'Nederland',uit:'Japan',groep:'F'},
+        {id:'E_SD1_2',datum:'15/06',thuis:'Ivoorkust',uit:'Ecuador',groep:'E'},
+        {id:'F_SD1_2',datum:'15/06',thuis:'Zweden',uit:'Tunesië',groep:'F'},
+        {id:'H_SD1_1',datum:'15/06',thuis:'Spanje',uit:'Kaapverdië',groep:'H'},
+        {id:'G_SD1_1',datum:'15/06',thuis:'België',uit:'Egypte',groep:'G'},
+        {id:'H_SD1_2',datum:'16/06',thuis:'Saudi-Arabië',uit:'Uruguay',groep:'H'},
+        {id:'G_SD1_2',datum:'16/06',thuis:'Iran',uit:'Nieuw-Zeeland',groep:'G'},
+        {id:'I_SD1_1',datum:'16/06',thuis:'Frankrijk',uit:'Senegal',groep:'I'},
+        {id:'I_SD1_2',datum:'17/06',thuis:'Irak',uit:'Noorwegen',groep:'I'},
+        {id:'J_SD1_1',datum:'17/06',thuis:'Argentinië',uit:'Algerije',groep:'J'},
+        {id:'J_SD1_2',datum:'17/06',thuis:'Oostenrijk',uit:'Jordanië',groep:'J'},
+        {id:'K_SD1_1',datum:'17/06',thuis:'Portugal',uit:'DR Congo',groep:'K'},
+        {id:'L_SD1_1',datum:'17/06',thuis:'Engeland',uit:'Kroatië',groep:'L'},
+        {id:'L_SD1_2',datum:'18/06',thuis:'Ghana',uit:'Panama',groep:'L'},
+        {id:'K_SD1_2',datum:'18/06',thuis:'Oezbekistan',uit:'Colombia',groep:'K'},
+      ],
+      groep2: [
+        {id:'A_SD2_1',datum:'19/06',thuis:'Zuid-Afrika',uit:'Zuid-Korea',groep:'A'},
+        {id:'A_SD2_2',datum:'20/06',thuis:'Tsjechië',uit:'Mexico',groep:'A'},
+        {id:'B_SD2_1',datum:'20/06',thuis:'Zwitserland',uit:'Canada',groep:'B'},
+        {id:'B_SD2_2',datum:'20/06',thuis:'Bosnië-Herzegovina',uit:'Qatar',groep:'B'},
+        {id:'C_SD2_1',datum:'21/06',thuis:'Schotland',uit:'Brazilië',groep:'C'},
+        {id:'C_SD2_2',datum:'21/06',thuis:'Marokko',uit:'Haïti',groep:'C'},
+        {id:'D_SD2_1',datum:'21/06',thuis:'Paraguay',uit:'Australië',groep:'D'},
+        {id:'D_SD2_2',datum:'21/06',thuis:'Turkije',uit:'Verenigde Staten',groep:'D'},
+        {id:'E_SD2_1',datum:'22/06',thuis:'Ecuador',uit:'Duitsland',groep:'E'},
+        {id:'E_SD2_2',datum:'22/06',thuis:'Curaçao',uit:'Ivoorkust',groep:'E'},
+        {id:'F_SD2_1',datum:'22/06',thuis:'Japan',uit:'Zweden',groep:'F'},
+        {id:'F_SD2_2',datum:'22/06',thuis:'Tunesië',uit:'Nederland',groep:'F'},
+        {id:'G_SD2_1',datum:'23/06',thuis:'Egypte',uit:'Iran',groep:'G'},
+        {id:'G_SD2_2',datum:'23/06',thuis:'Nieuw-Zeeland',uit:'België',groep:'G'},
+        {id:'H_SD2_1',datum:'23/06',thuis:'Uruguay',uit:'Spanje',groep:'H'},
+        {id:'H_SD2_2',datum:'23/06',thuis:'Kaapverdië',uit:'Saudi-Arabië',groep:'H'},
+        {id:'I_SD2_1',datum:'24/06',thuis:'Senegal',uit:'Irak',groep:'I'},
+        {id:'I_SD2_2',datum:'24/06',thuis:'Noorwegen',uit:'Frankrijk',groep:'I'},
+        {id:'J_SD2_1',datum:'24/06',thuis:'Algerije',uit:'Oostenrijk',groep:'J'},
+        {id:'J_SD2_2',datum:'24/06',thuis:'Jordanië',uit:'Argentinië',groep:'J'},
+        {id:'K_SD2_1',datum:'25/06',thuis:'Colombia',uit:'Portugal',groep:'K'},
+        {id:'K_SD2_2',datum:'25/06',thuis:'DR Congo',uit:'Oezbekistan',groep:'K'},
+        {id:'L_SD2_1',datum:'25/06',thuis:'Kroatië',uit:'Ghana',groep:'L'},
+        {id:'L_SD2_2',datum:'25/06',thuis:'Panama',uit:'Engeland',groep:'L'},
+      ],
+      groep3: [
+        {id:'A_SD3_1',datum:'27/06',thuis:'Mexico',uit:'Zuid-Korea',groep:'A'},
+        {id:'A_SD3_2',datum:'27/06',thuis:'Tsjechië',uit:'Zuid-Afrika',groep:'A'},
+        {id:'B_SD3_1',datum:'28/06',thuis:'Canada',uit:'Qatar',groep:'B'},
+        {id:'B_SD3_2',datum:'28/06',thuis:'Zwitserland',uit:'Bosnië-Herzegovina',groep:'B'},
+        {id:'C_SD3_1',datum:'29/06',thuis:'Brazilië',uit:'Schotland',groep:'C'},
+        {id:'C_SD3_2',datum:'29/06',thuis:'Marokko',uit:'Haïti',groep:'C'},
+        {id:'D_SD3_1',datum:'30/06',thuis:'Verenigde Staten',uit:'Australië',groep:'D'},
+        {id:'D_SD3_2',datum:'30/06',thuis:'Paraguay',uit:'Turkije',groep:'D'},
+        {id:'E_SD3_1',datum:'01/07',thuis:'Duitsland',uit:'Ivoorkust',groep:'E'},
+        {id:'E_SD3_2',datum:'01/07',thuis:'Ecuador',uit:'Curaçao',groep:'E'},
+        {id:'F_SD3_1',datum:'02/07',thuis:'Nederland',uit:'Zweden',groep:'F'},
+        {id:'F_SD3_2',datum:'02/07',thuis:'Japan',uit:'Tunesië',groep:'F'},
+        {id:'G_SD3_1',datum:'03/07',thuis:'België',uit:'Iran',groep:'G'},
+        {id:'G_SD3_2',datum:'03/07',thuis:'Egypte',uit:'Nieuw-Zeeland',groep:'G'},
+        {id:'H_SD3_1',datum:'04/07',thuis:'Spanje',uit:'Uruguay',groep:'H'},
+        {id:'H_SD3_2',datum:'04/07',thuis:'Saudi-Arabië',uit:'Kaapverdië',groep:'H'},
+        {id:'I_SD3_1',datum:'05/07',thuis:'Frankrijk',uit:'Irak',groep:'I'},
+        {id:'I_SD3_2',datum:'05/07',thuis:'Senegal',uit:'Noorwegen',groep:'I'},
+        {id:'J_SD3_1',datum:'06/07',thuis:'Argentinië',uit:'Oostenrijk',groep:'J'},
+        {id:'J_SD3_2',datum:'06/07',thuis:'Algerije',uit:'Jordanië',groep:'J'},
+        {id:'K_SD3_1',datum:'07/07',thuis:'Portugal',uit:'Oezbekistan',groep:'K'},
+        {id:'K_SD3_2',datum:'07/07',thuis:'Colombia',uit:'DR Congo',groep:'K'},
+        {id:'L_SD3_1',datum:'08/07',thuis:'Engeland',uit:'Ghana',groep:'L'},
+        {id:'L_SD3_2',datum:'08/07',thuis:'Kroatië',uit:'Panama',groep:'L'},
+      ],
+      ro32: Array.from({length:16},(_,i)=>({id:`RO32_${i+1}`,datum:`${11+Math.floor(i/4)}/07`,thuis:`Team ${i*2+1}`,uit:`Team ${i*2+2}`,groep:'1/16'})),
+      ro16: Array.from({length:8},(_,i)=>({id:`RO16_${i+1}`,datum:`${19+i}/07`,thuis:`Winnaar RO32 M${i*2+1}`,uit:`Winnaar RO32 M${i*2+2}`,groep:'1/8'})),
+      kwart: Array.from({length:4},(_,i)=>({id:`KF_${i+1}`,datum:`${9+i}/08`,thuis:`Winnaar 1/8 M${i*2+1}`,uit:`Winnaar 1/8 M${i*2+2}`,groep:'KF'})),
+      halve: [{id:'HF_1',datum:'15/08',thuis:'Winnaar KF1',uit:'Winnaar KF2',groep:'HF'},{id:'HF_2',datum:'16/08',thuis:'Winnaar KF3',uit:'Winnaar KF4',groep:'HF'}],
+      finale: [{id:'FINALE',datum:'19/07',thuis:'Winnaar HF1',uit:'Winnaar HF2',groep:'Finale'}],
+    };
+
+    let bestaandeUitslagen = {};
+
+    async function laadBestaandeUitslagen() {
+      try {
+        const { data } = await db.from('match_results').select('*');
+        if (data) data.forEach(r => { bestaandeUitslagen[r.match_id] = r; });
+      } catch(e) { console.log('Uitslagen laden:', e); }
+    }
+
+    async function laadWedstrijdenVoorUitslag() {
+      const fase = document.getElementById('uitslag-fase-select').value;
+      const container = document.getElementById('uitslagen-container');
+      if (!fase) { container.innerHTML = ''; return; }
+
+      await laadBestaandeUitslagen();
+      const wedstrijden = wedstrijdenData[fase] || [];
+      let html = '';
+      let huidigeDatum = '';
+
+      wedstrijden.forEach(w => {
+        if (w.datum !== huidigeDatum) {
+          huidigeDatum = w.datum;
+          html += `<div class="dag-label">📅 ${w.datum}</div>`;
+        }
+        const bestaand = bestaandeUitslagen[w.id];
+        const st = bestaand?.score_thuis ?? '';
+        const su = bestaand?.score_uit ?? '';
+        const gespeeld = bestaand?.gespeeld || false;
+
+        html += `
+          <div class="uitslag-rij ${gespeeld ? 'gespeeld' : ''}" id="uitslag-rij-${w.id}">
+            <div class="uitslag-team thuis">${w.thuis}</div>
+            <div class="uitslag-score-groep">
+              <input type="number" min="0" max="30" value="${st}" id="st-${w.id}" placeholder="0" style="border-radius:6px;border:1.5px solid #dde4e6">
+              <span class="uitslag-sep">-</span>
+              <input type="number" min="0" max="30" value="${su}" id="su-${w.id}" placeholder="0" style="border-radius:6px;border:1.5px solid #dde4e6">
+            </div>
+            <div class="uitslag-team">${w.uit}</div>
+            <button class="btn btn-success btn-sm" onclick="slaUitslagOp('${w.id}','${w.thuis}','${w.uit}','${w.datum}','${fase}')">
+              ${gespeeld ? '✏️' : '💾'}
+            </button>
+          </div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    async function slaUitslagOp(matchId, thuis, uit, datum, fase) {
+      const st = document.getElementById('st-' + matchId).value;
+      const su = document.getElementById('su-' + matchId).value;
+
+      if (st === '' || su === '') { alert('Vul beide scores in!'); return; }
+
+      const faseMap = {groep1:'groep',groep2:'groep',groep3:'groep',ro32:'ro32',ro16:'ro16',kwart:'kwart',halve:'halve',finale:'finale'};
+
+      const { error } = await db.from('match_results').upsert({
+        match_id: matchId,
+        fase: faseMap[fase] || fase,
+        thuis: thuis,
+        uit: uit,
+        score_thuis: parseInt(st),
+        score_uit: parseInt(su),
+        datum: `2026-${datum.split('/')[1]}-${datum.split('/')[0]}`,
+        gespeeld: true,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'match_id' });
+
+      if (error) {
+        alert('❌ Fout: ' + error.message);
+      } else {
+        bestaandeUitslagen[matchId] = { score_thuis: parseInt(st), score_uit: parseInt(su), gespeeld: true };
+        const rij = document.getElementById('uitslag-rij-' + matchId);
+        if (rij) {
+          rij.classList.add('gespeeld');
+          rij.querySelector('button').textContent = '✏️';
+        }
+        // Kleine bevestiging
+        const btn = document.querySelector(`#uitslag-rij-${matchId} button`);
+        if (btn) { btn.textContent = '✅'; setTimeout(() => btn.textContent = '✏️', 1500); }
+      }
+    }
 
     async function uitloggen() { await db.auth.signOut(); window.location.href = '/rsm-wk-2026/index.html'; }
 
