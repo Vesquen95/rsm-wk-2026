@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WK Quiz 2026 – Host Dashboard</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .tab-nav { display: flex; gap: 4px; background: #f0f4f8; padding: 4px; border-radius: 12px; margin-bottom: 28px; }
+    .tab-btn { flex: 1; padding: 10px 8px; border: none; background: transparent; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; color: #7f8c8d; transition: 0.2s; }
+    .tab-btn.active { background: white; color: #1a1a2e; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; }
+    .modal h3 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+    .ronde-rij { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1.5px solid #e8ecef; border-radius: 10px; margin-bottom: 10px; transition: 0.2s; }
+    .ronde-rij:hover { border-color: #c8d0d8; background: #fafbfc; }
+    .ronde-info { flex: 1; }
+    .ronde-info h4 { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 3px; }
+    .ronde-info p { font-size: 13px; color: #7f8c8d; }
+    .ronde-acties { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .vraag-rij { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid #e8ecef; border-radius: 8px; margin-bottom: 8px; font-size: 14px; }
+    .vraag-tekst { flex: 1; color: #2c3e50; }
+    .vraag-meta { font-size: 12px; color: #7f8c8d; margin-top: 3px; }
+    .antwoord-invoer { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+    .antwoord-invoer input, .antwoord-invoer select { flex: 1; padding: 8px 12px; font-size: 14px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: #f8f9fa; border-radius: 12px; padding: 16px; text-align: center; }
+    .stat-card .getal { font-size: 28px; font-weight: 800; color: #0f3460; }
+    .stat-card .label { font-size: 12px; color: #7f8c8d; margin-top: 4px; }
+    .punten-knoppen { display: flex; gap: 6px; }
+    .punten-knop { padding: 8px 18px; border: 2px solid #dde4e6; border-radius: 8px; background: white; font-weight: 700; cursor: pointer; font-size: 15px; transition: 0.15s; }
+    .punten-knop.actief-5 { border-color: #f39c12; background: #fef9e7; color: #d4810c; }
+    .punten-knop.actief-10 { border-color: #0f3460; background: #eef3ff; color: #0f3460; }
+    .punten-knop.actief-20 { border-color: #27ae60; background: #eafaf1; color: #1e8449; }
+    .wedstrijd-velden { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: end; }
+    .vs-midden { text-align: center; font-weight: 700; color: #7f8c8d; padding-bottom: 10px; }
+    .score-tabel { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .score-tabel th { background: #f8f9fa; padding: 10px 12px; text-align: left; font-size: 12px; text-transform: uppercase; color: #7f8c8d; }
+    .score-tabel td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
+    .gescoord { border-left: 3px solid #27ae60; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="navbar-brand">🏆 WK <span>Quiz</span> 2026</a>
+    <div class="navbar-user">
+      <span style="color:#f39c12;font-weight:700">👑 HOST</span>
+      <a href="../scoreboard.html" class="btn-logout" target="_blank">📊 Scoreboard</a>
+      <a href="./beheer.html" class="btn-logout">👥 Deelnemers</a>
+      <button class="btn-logout" onclick="uitloggen()">Uitloggen</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>👑 Host Dashboard</h1>
+      <p>Beheer rondes, vragen en scores</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="getal" id="stat-deelnemers">–</div><div class="label">Deelnemers</div></div>
+      <div class="stat-card"><div class="getal" id="stat-rondes">–</div><div class="label">Rondes</div></div>
+      <div class="stat-card"><div class="getal" id="stat-vragen">–</div><div class="label">Vragen</div></div>
+      <div class="stat-card"><div class="getal" id="stat-antwoorden">–</div><div class="label">Antwoorden</div></div>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="toonTab('rondes')">📋 Rondes</button>
+      <button class="tab-btn" onclick="toonTab('scoren')">✅ Scoren</button>
+      <button class="tab-btn" onclick="toonTab('deelnemers')">👥 Deelnemers</button>
+    </div>
+
+    <div id="tab-rondes">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2 style="font-size:18px;font-weight:700">Rondes beheren</h2>
+        <button class="btn btn-primary" onclick="openRondeModal()">+ Nieuwe ronde</button>
+      </div>
+      <div id="rondes-lijst"><div class="loading"><div class="spinner"></div> Laden...</div></div>
+    </div>
+
+    <div id="tab-scoren" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-title">✅ Antwoorden beoordelen</div></div>
+        <div class="form-group">
+          <label>Selecteer ronde</label>
+          <select id="scoren-ronde-select" onchange="laadVragenVoorScoren()">
+            <option value="">-- Kies een ronde --</option>
+          </select>
+        </div>
+        <div id="scoren-container"></div>
+      </div>
+    </div>
+
+    <div id="tab-deelnemers" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-title">👥 Deelnemers</div></div>
+        <div id="deelnemers-lijst"><div class="loading"><div class="spinner"></div> Laden...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Ronde -->
+  <div class="modal-overlay" id="ronde-modal">
+    <div class="modal">
+      <h3 id="modal-ronde-titel">Nieuwe ronde</h3>
+      <input type="hidden" id="ronde-id-edit">
+      <div class="form-group">
+        <label>Naam</label>
+        <input type="text" id="ronde-naam" placeholder="bv. Groepsfase speeldag 1">
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="ronde-type">
+          <option value="general">Algemene vragen</option>
+          <option value="group">Groepsfase</option>
+          <option value="round_of_16">1/8 finale</option>
+          <option value="quarter_final">Kwartfinale</option>
+          <option value="semi_final">Halve finale</option>
+          <option value="final">Finale</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Deadline (optioneel)</label>
+        <input type="datetime-local" id="ronde-deadline">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn btn-secondary" onclick="sluitModal('ronde-modal')">Annuleren</button>
+        <button class="btn btn-primary" onclick="slaRondeOp()">Opslaan</button>
+      </div>
+
+      <div id="vragen-sectie" style="display:none;margin-top:24px;padding-top:20px;border-top:2px solid #f0f0f0">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h4 style="font-size:16px;font-weight:700">Vragen in deze ronde</h4>
+          <button class="btn btn-success btn-sm" onclick="openVraagModal()">+ Vraag toevoegen</button>
+        </div>
+        <div id="vragen-lijst-modal"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Vraag -->
+  <div class="modal-overlay" id="vraag-modal">
+    <div class="modal">
+      <h3>Vraag toevoegen</h3>
+      <input type="hidden" id="vraag-ronde-id">
+      <div class="form-group">
+        <label>Type vraag</label>
+        <select id="vraag-type" onchange="wisselVraagType()">
+          <option value="result_1x2">⚽ Uitslag (1/X/2)</option>
+          <option value="score">🔢 Exacte score</option>
+          <option value="team_select">🌍 Land kiezen</option>
+          <option value="text">✏️ Vrije tekst</option>
+          <option value="number">🔢 Getal</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Vraagtekst</label>
+        <input type="text" id="vraag-tekst" placeholder="Vul de vraag in...">
+      </div>
+      <div id="wedstrijd-velden" class="form-group">
+        <label>Wedstrijd</label>
+        <div class="wedstrijd-velden">
+          <div><label>Thuisploeg</label><select id="thuis-team"><option value="">-- Kies --</option></select></div>
+          <div class="vs-midden">VS</div>
+          <div><label>Uitploeg</label><select id="uit-team"><option value="">-- Kies --</option></select></div>
+        </div>
+        <div class="form-group" style="margin-top:12px;margin-bottom:0">
+          <label>Wedstrijddatum</label>
+          <input type="date" id="wedstrijd-datum">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Punten</label>
+        <div class="punten-knoppen">
+          <button class="punten-knop" onclick="kiesPunten(5,this)">5</button>
+          <button class="punten-knop actief-10" onclick="kiesPunten(10,this)">10</button>
+          <button class="punten-knop" onclick="kiesPunten(20,this)">20</button>
+        </div>
+        <input type="hidden" id="vraag-punten" value="10">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button class="btn btn-secondary" onclick="sluitModal('vraag-modal')">Annuleren</button>
+        <button class="btn btn-primary" onclick="slaVraagOp()">Vraag opslaan</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script>
+    let teams = [];
+    let huidigeRondeId = null;
+
+    async function init() {
+      const { data: { session } } = await db.auth.getSession();
+      if (!session) { window.location.href = '/rsm-wk-2026/index.html'; return; }
+      const { data: profile } = await db.from('profiles').select('is_host').eq('id', session.user.id).single();
+      if (!profile?.is_host) { window.location.href = '/rsm-wk-2026/pages/deelnemer.html'; return; }
+      await laadTeams();
+      await laadStats();
+      await laadRondes();
+      await laadRondesVoorScoren();
+      await laadDeelnemers();
+    }
+
+    async function laadTeams() {
+      const { data } = await db.from('teams').select('id, name, flag_emoji').order('name');
+      teams = data || [];
+      ['thuis-team', 'uit-team'].forEach(id => {
+        const sel = document.getElementById(id);
+        teams.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t.id; opt.textContent = (t.flag_emoji || '') + ' ' + t.name;
+          sel.appendChild(opt);
+        });
+      });
+    }
+
+    async function laadStats() {
+      const [{ count: d }, { count: r }, { count: v }, { count: a }] = await Promise.all([
+        db.from('profiles').select('*', { count: 'exact', head: true }).eq('is_host', false),
+        db.from('rounds').select('*', { count: 'exact', head: true }),
+        db.from('questions').select('*', { count: 'exact', head: true }),
+        db.from('answers').select('*', { count: 'exact', head: true }),
+      ]);
+      document.getElementById('stat-deelnemers').textContent = d || 0;
+      document.getElementById('stat-rondes').textContent = r || 0;
+      document.getElementById('stat-vragen').textContent = v || 0;
+      document.getElementById('stat-antwoorden').textContent = a || 0;
+    }
+
+    async function laadRondes() {
+      const { data: rondes } = await db.from('rounds').select('*, questions(count)').order('sort_order');
+      const lijst = document.getElementById('rondes-lijst');
+      if (!rondes?.length) { lijst.innerHTML = '<p style="text-align:center;color:#7f8c8d;padding:32px">Nog geen rondes. Maak er een aan!</p>'; return; }
+      lijst.innerHTML = rondes.map(r => {
+        const n = r.questions?.[0]?.count || 0;
+        const d = r.deadline ? new Date(r.deadline).toLocaleString('nl-BE', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Geen deadline';
+        return `<div class="ronde-rij">
+          <div class="ronde-info">
+            <h4>${r.name}</h4>
+            <p>${n} vragen · 📅 ${d} · ${r.is_open ? '<span class="badge badge-open">Open</span>' : '<span class="badge badge-gesloten">Gesloten</span>'}</p>
+          </div>
+          <div class="ronde-acties">
+            <button class="btn btn-secondary btn-sm" onclick="bewerkenRonde(${r.id})">✏️ Bewerken</button>
+            <button class="btn btn-sm ${r.is_open?'btn-danger':'btn-success'}" onclick="toggleRonde(${r.id},${r.is_open})">${r.is_open?'🔒 Sluiten':'🔓 Openen'}</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function toonTab(naam) {
+      ['rondes','scoren','deelnemers'].forEach(t => { document.getElementById('tab-'+t).style.display = t===naam?'block':'none'; });
+      document.querySelectorAll('.tab-btn').forEach((b,i) => { b.classList.toggle('active', ['rondes','scoren','deelnemers'][i]===naam); });
+    }
+
+    function openRondeModal() {
+      document.getElementById('modal-ronde-titel').textContent = 'Nieuwe ronde';
+      document.getElementById('ronde-id-edit').value = '';
+      document.getElementById('ronde-naam').value = '';
+      document.getElementById('ronde-type').value = 'group';
+      document.getElementById('ronde-deadline').value = '';
+      document.getElementById('vragen-sectie').style.display = 'none';
+      document.getElementById('ronde-modal').classList.add('open');
+    }
+
+    async function bewerkenRonde(id) {
+      const { data: ronde } = await db.from('rounds').select('*').eq('id', id).single();
+      if (!ronde) return;
+      document.getElementById('modal-ronde-titel').textContent = 'Ronde bewerken';
+      document.getElementById('ronde-id-edit').value = ronde.id;
+      document.getElementById('ronde-naam').value = ronde.name;
+      document.getElementById('ronde-type').value = ronde.round_type;
+      if (ronde.deadline) document.getElementById('ronde-deadline').value = new Date(ronde.deadline).toISOString().slice(0,16);
+      document.getElementById('vragen-sectie').style.display = 'block';
+      huidigeRondeId = ronde.id;
+      document.getElementById('ronde-modal').classList.add('open');
+      await laadVragenVanRonde(ronde.id);
+    }
+
+    async function laadVragenVanRonde(rondeId) {
+      const { data: vragen } = await db.from('questions')
+        .select('*, teams!questions_home_team_id_fkey(name), away_team:teams!questions_away_team_id_fkey(name)')
+        .eq('round_id', rondeId).order('sort_order');
+      const lijst = document.getElementById('vragen-lijst-modal');
+      if (!vragen?.length) { lijst.innerHTML = '<p style="color:#7f8c8d;font-size:14px">Nog geen vragen.</p>'; return; }
+      const typen = { result_1x2:'1/X/2', score:'Score', text:'Tekst', team_select:'Land', number:'Getal' };
+      lijst.innerHTML = vragen.map(v => {
+        const w = v.teams ? `${v.teams.name} – ${v.away_team?.name||'?'}` : '';
+        return `<div class="vraag-rij ${v.correct_answer?'gescoord':''}">
+          <div class="vraag-tekst">
+            <strong>${v.question_text}</strong>
+            <div class="vraag-meta">${typen[v.question_type]} · ${v.points} pt${w?' · '+w:''}${v.correct_answer?' · ✓ '+v.correct_answer:''}</div>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="verwijderVraag(${v.id})">🗑️</button>
+        </div>`;
+      }).join('');
+    }
+
+    async function slaRondeOp() {
+      const id = document.getElementById('ronde-id-edit').value;
+      const data = {
+        name: document.getElementById('ronde-naam').value,
+        round_type: document.getElementById('ronde-type').value,
+        deadline: document.getElementById('ronde-deadline').value || null,
+        sort_order: Date.now()
+      };
+      if (!data.name) { alert('Vul een naam in!'); return; }
+      if (id) {
+        const { error } = await db.from('rounds').update(data).eq('id', id);
+        if (error) { alert('❌ Fout bij opslaan: ' + error.message); return; }
+        document.getElementById('vragen-sectie').style.display = 'block';
+        huidigeRondeId = id;
+        await laadVragenVanRonde(id);
+      } else {
+        const { data: nr, error } = await db.from('rounds').insert(data).select().single();
+        if (error) { alert('❌ Fout bij aanmaken: ' + error.message); return; }
+        if (nr) {
+          huidigeRondeId = nr.id;
+          document.getElementById('ronde-id-edit').value = nr.id;
+          document.getElementById('vragen-sectie').style.display = 'block';
+          await laadVragenVanRonde(nr.id);
+          alert('✅ Ronde aangemaakt! Je kan nu vragen toevoegen.');
+        }
+      }
+      await laadRondes(); await laadStats(); await laadRondesVoorScoren();
+    }
+
+    async function toggleRonde(id, isOpen) {
+      await db.from('rounds').update({ is_open: !isOpen }).eq('id', id);
+      await laadRondes();
+    }
+
+    function openVraagModal() {
+      document.getElementById('vraag-ronde-id').value = huidigeRondeId;
+      document.getElementById('vraag-tekst').value = '';
+      document.getElementById('vraag-type').value = 'result_1x2';
+      document.getElementById('vraag-punten').value = '10';
+      document.querySelectorAll('.punten-knop').forEach(b => b.className = 'punten-knop');
+      document.querySelector('.punten-knop:nth-child(2)').classList.add('actief-10');
+      wisselVraagType();
+      document.getElementById('vraag-modal').classList.add('open');
+    }
+
+    function wisselVraagType() {
+      const type = document.getElementById('vraag-type').value;
+      document.getElementById('wedstrijd-velden').style.display = ['result_1x2','score'].includes(type) ? 'block' : 'none';
+    }
+
+    function kiesPunten(waarde, knop) {
+      document.querySelectorAll('.punten-knop').forEach(b => b.className = 'punten-knop');
+      knop.classList.add('actief-' + waarde);
+      document.getElementById('vraag-punten').value = waarde;
+    }
+
+    async function slaVraagOp() {
+      const data = {
+        round_id: document.getElementById('vraag-ronde-id').value,
+        question_text: document.getElementById('vraag-tekst').value,
+        question_type: document.getElementById('vraag-type').value,
+        points: parseInt(document.getElementById('vraag-punten').value),
+        home_team_id: document.getElementById('thuis-team').value || null,
+        away_team_id: document.getElementById('uit-team').value || null,
+        match_date: document.getElementById('wedstrijd-datum').value || null,
+        sort_order: Date.now()
+      };
+      if (!data.question_text) { alert('Vul een vraagtekst in!'); return; }
+      if (!data.round_id) { alert('❌ Geen ronde geselecteerd. Sla eerst de ronde op.'); return; }
+      const { error } = await db.from('questions').insert(data);
+      if (error) { alert('❌ Fout bij opslaan vraag: ' + error.message); return; }
+      sluitModal('vraag-modal');
+      await laadVragenVanRonde(huidigeRondeId);
+      await laadStats();
+    }
+
+    async function verwijderVraag(id) {
+      if (!confirm('Vraag verwijderen?')) return;
+      await db.from('questions').delete().eq('id', id);
+      await laadVragenVanRonde(huidigeRondeId);
+      await laadStats();
+    }
+
+    async function laadRondesVoorScoren() {
+      const { data: rondes } = await db.from('rounds').select('id, name').order('sort_order');
+      const sel = document.getElementById('scoren-ronde-select');
+      const huidig = sel.value;
+      sel.innerHTML = '<option value="">-- Kies een ronde --</option>';
+      rondes?.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.id; opt.textContent = r.name;
+        if (r.id == huidig) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
+    async function laadVragenVoorScoren() {
+      const rondeId = document.getElementById('scoren-ronde-select').value;
+      if (!rondeId) return;
+      const { data: vragen } = await db.from('questions')
+        .select('*, teams!questions_home_team_id_fkey(name,flag_emoji), away_team:teams!questions_away_team_id_fkey(name,flag_emoji)')
+        .eq('round_id', rondeId).order('sort_order');
+      const { data: antwoorden } = await db.from('answers')
+        .select('*, profiles(display_name)')
+        .in('question_id', vragen?.map(v => v.id) || []);
+      const container = document.getElementById('scoren-container');
+      if (!vragen?.length) { container.innerHTML = '<p style="color:#7f8c8d;padding:16px">Geen vragen in deze ronde.</p>'; return; }
+      const typen = { result_1x2:'1/X/2', score:'Score', text:'Tekst', team_select:'Land', number:'Getal' };
+      container.innerHTML = vragen.map(v => {
+        const antw = antwoorden?.filter(a => a.question_id === v.id) || [];
+        return `<div class="vraag-rij ${v.correct_answer?'gescoord':''}" style="flex-direction:column;align-items:stretch" id="scoor-${v.id}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+            <div>
+              <strong>${v.question_text}</strong>
+              <div class="vraag-meta">${typen[v.question_type]} · ${v.points} pt</div>
+            </div>
+            <span class="badge ${v.correct_answer?'badge-open':'badge-gesloten'}">${v.correct_answer?'✓ Gescoord':'Niet gescoord'}</span>
+          </div>
+          <div class="antwoord-invoer">
+            <input type="text" id="juist-${v.id}" value="${v.correct_answer||''}" placeholder="Juist antwoord...">
+            <button class="btn btn-success btn-sm" onclick="verwerkScore(${v.id},${rondeId},${v.points})">Verwerk</button>
+          </div>
+          ${antw.length ? `<div style="margin-top:10px;font-size:13px;color:#7f8c8d">
+            <strong style="color:#2c3e50">${antw.length} antwoorden:</strong>
+            ${antw.map(a => `<span style="margin-left:8px">${a.profiles?.display_name}: <em>${a.answer_value}</em></span>`).join('')}
+          </div>` : '<div style="margin-top:8px;font-size:13px;color:#bdc3c7">Nog geen antwoorden.</div>'}
+        </div>`;
+      }).join('');
+    }
+
+    async function verwerkScore(vraagId, rondeId, maxPunten) {
+      const juistAntwoord = document.getElementById('juist-' + vraagId).value.trim();
+      if (!juistAntwoord) { alert('Vul het juiste antwoord in!'); return; }
+      await db.from('questions').update({ correct_answer: juistAntwoord }).eq('id', vraagId);
+      const { data: antwoorden } = await db.from('answers').select('user_id, answer_value').eq('question_id', vraagId);
+      if (!antwoorden?.length) { alert('Geen antwoorden gevonden.'); await laadVragenVoorScoren(); return; }
+      const inserts = antwoorden.map(a => ({
+        user_id: a.user_id, question_id: vraagId, round_id: parseInt(rondeId),
+        points_awarded: a.answer_value.trim().toLowerCase() === juistAntwoord.toLowerCase() ? maxPunten : 0
+      }));
+      await db.from('scores').upsert(inserts, { onConflict: 'user_id,question_id' });
+      const juist = inserts.filter(s => s.points_awarded > 0).length;
+      alert(`✅ ${juist} van ${antwoorden.length} deelnemers krijgen ${maxPunten} punten.`);
+      await laadVragenVoorScoren();
+    }
+
+    async function laadDeelnemers() {
+      const { data } = await db.from('profiles').select('*').eq('is_host', false).order('display_name');
+      const lijst = document.getElementById('deelnemers-lijst');
+      if (!data?.length) { lijst.innerHTML = '<p style="text-align:center;color:#7f8c8d;padding:32px">Nog geen deelnemers.</p>'; return; }
+      lijst.innerHTML = `<table class="score-tabel">
+        <thead><tr><th>#</th><th>Naam</th></tr></thead>
+        <tbody>${data.map((d,i) => `<tr><td>${i+1}</td><td>${d.display_name}</td></tr>`).join('')}</tbody>
+      </table>`;
+    }
+
+    function sluitModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    document.querySelectorAll('.modal-overlay').forEach(m => {
+      m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    });
+
+    async function uitloggen() { await db.auth.signOut(); window.location.href = '/rsm-wk-2026/index.html'; }
+
+    init();
+  </script>
+</body>
+</html>
