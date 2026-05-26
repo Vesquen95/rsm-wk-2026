@@ -304,7 +304,7 @@
         name: document.getElementById('ronde-naam').value,
         round_type: document.getElementById('ronde-type').value,
         deadline: document.getElementById('ronde-deadline').value || null,
-        sort_order: Date.now()
+        sort_order: Math.floor(Date.now() / 1000000)
       };
       if (!data.name) { alert('Vul een naam in!'); return; }
       if (id) {
@@ -363,7 +363,7 @@
         home_team_id: document.getElementById('thuis-team').value || null,
         away_team_id: document.getElementById('uit-team').value || null,
         match_date: document.getElementById('wedstrijd-datum').value || null,
-        sort_order: Date.now()
+        sort_order: Math.floor(Date.now() / 1000000)
       };
       if (!data.question_text) { alert('Vul een vraagtekst in!'); return; }
       if (!data.round_id) { alert('❌ Geen ronde geselecteerd. Sla eerst de ronde op.'); return; }
