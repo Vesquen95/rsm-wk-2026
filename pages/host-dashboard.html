@@ -300,6 +300,9 @@
             <p>${n} vragen · 📅 ${d} · ${r.is_open ? '<span class="badge badge-open">Open</span>' : '<span class="badge badge-gesloten">Gesloten</span>'}</p>
           </div>
           <div class="ronde-acties">
+            <button class="btn btn-sm ${r.is_published ? 'btn-success' : 'btn-secondary'}" onclick="togglePublish(${r.id}, ${r.is_published})" title="${r.is_published ? 'Zichtbaar voor deelnemers' : 'Verborgen voor deelnemers'}">
+              ${r.is_published ? '👁️ Zichtbaar' : '🙈 Verborgen'}
+            </button>
             <button class="btn btn-secondary btn-sm" onclick="bewerkenRonde(${r.id})">✏️ Bewerken</button>
             <button class="btn btn-sm ${r.is_open?'btn-danger':'btn-success'}" onclick="toggleRonde(${r.id},${r.is_open})">${r.is_open?'🔒 Sluiten':'🔓 Openen'}</button>
           </div>
@@ -404,6 +407,11 @@
         }
       }
       await laadRondes(); await laadStats(); await laadRondesVoorScoren();
+    }
+
+    async function togglePublish(id, isPublished) {
+      await db.from('rounds').update({ is_published: !isPublished }).eq('id', id);
+      await laadRondes();
     }
 
     async function toggleRonde(id, isOpen) {
