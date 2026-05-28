@@ -192,6 +192,7 @@
     <div class="modal">
       <h3>Vraag toevoegen</h3>
       <input type="hidden" id="vraag-ronde-id">
+      <input type="hidden" id="vraag-id-edit">
       <div class="form-group">
         <label>Type vraag</label>
         <select id="vraag-type" onchange="wisselVraagType()">
@@ -341,7 +342,10 @@
             <strong>${v.question_text}</strong>
             <div class="vraag-meta">${typen[v.question_type]} · ${v.points} pt${w?' · '+w:''}${v.correct_answer?' · ✓ '+v.correct_answer:''}</div>
           </div>
-          <button class="btn btn-danger btn-sm" onclick="verwijderVraag(${v.id})">🗑️</button>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-secondary btn-sm" onclick="bewerkenVraag(${v.id})">✏️</button>
+            <button class="btn btn-danger btn-sm" onclick="verwijderVraag(${v.id})">🗑️</button>
+          </div>
         </div>`;
       }).join('');
     }
@@ -382,11 +386,34 @@
 
     function openVraagModal() {
       document.getElementById('vraag-ronde-id').value = huidigeRondeId;
+      document.getElementById('vraag-id-edit').value = '';
       document.getElementById('vraag-tekst').value = '';
       document.getElementById('vraag-type').value = 'result_1x2';
       document.getElementById('vraag-punten').value = '10';
+      document.getElementById('thuis-team').value = '';
+      document.getElementById('uit-team').value = '';
+      document.getElementById('wedstrijd-datum').value = '';
       document.querySelectorAll('.punten-knop').forEach(b => b.className = 'punten-knop');
       document.querySelector('.punten-knop:nth-child(2)').classList.add('actief-10');
+      document.querySelector('#vraag-modal h3').textContent = 'Vraag toevoegen';
+      wisselVraagType();
+      document.getElementById('vraag-modal').classList.add('open');
+    }
+
+    async function bewerkenVraag(id) {
+      const { data: v } = await db.from('questions').select('*').eq('id', id).single();
+      if (!v) return;
+      document.getElementById('vraag-ronde-id').value = v.round_id;
+      document.getElementById('vraag-id-edit').value = v.id;
+      document.getElementById('vraag-tekst').value = v.question_text;
+      document.getElementById('vraag-type').value = v.question_type;
+      document.getElementById('vraag-punten').value = v.points;
+      document.getElementById('thuis-team').value = v.home_team_id || '';
+      document.getElementById('uit-team').value = v.away_team_id || '';
+      document.getElementById('wedstrijd-datum').value = v.match_date || '';
+      document.querySelectorAll('.punten-knop').forEach(b => b.className = 'punten-knop');
+      document.querySelector(`.punten-knop[onclick*="kiesPunten(${v.points}"]`)?.classList.add('actief-' + v.points);
+      document.querySelector('#vraag-modal h3').textContent = 'Vraag bewerken';
       wisselVraagType();
       document.getElementById('vraag-modal').classList.add('open');
     }
@@ -403,6 +430,7 @@
     }
 
     async function slaVraagOp() {
+      const vraagId = document.getElementById('vraag-id-edit').value;
       const data = {
         round_id: document.getElementById('vraag-ronde-id').value,
         question_text: document.getElementById('vraag-tekst').value,
@@ -411,12 +439,22 @@
         home_team_id: document.getElementById('thuis-team').value || null,
         away_team_id: document.getElementById('uit-team').value || null,
         match_date: document.getElementById('wedstrijd-datum').value || null,
-        sort_order: Math.floor(Date.now() / 1000000)
       };
       if (!data.question_text) { alert('Vul een vraagtekst in!'); return; }
       if (!data.round_id) { alert('❌ Geen ronde geselecteerd. Sla eerst de ronde op.'); return; }
-      const { error } = await db.from('questions').insert(data);
-      if (error) { alert('❌ Fout bij opslaan vraag: ' + error.message); return; }
+
+      let error;
+      if (vraagId) {
+        // Bewerken
+        ({ error } = await db.from('questions').update(data).eq('id', vraagId));
+        if (error) { alert('❌ Fout bij bewerken: ' + error.message); return; }
+      } else {
+        // Nieuw aanmaken
+        data.sort_order = Math.floor(Date.now() / 1000000);
+        ({ error } = await db.from('questions').insert(data));
+        if (error) { alert('❌ Fout bij opslaan: ' + error.message); return; }
+      }
+
       sluitModal('vraag-modal');
       await laadVragenVanRonde(huidigeRondeId);
       await laadStats();
