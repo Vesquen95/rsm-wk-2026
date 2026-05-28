@@ -94,10 +94,11 @@
     async function laadRondes() {
       const { data: rondes } = await db.from('rounds')
         .select('*, questions(*, teams!questions_home_team_id_fkey(name, flag_emoji), away_team:teams!questions_away_team_id_fkey(name, flag_emoji))')
+        .eq('is_published', true)
         .order('sort_order');
 
       if (!rondes?.length) {
-        document.getElementById('rondes-container').innerHTML = '<div class="card"><p style="text-align:center;color:#7f8c8d;padding:32px">🏟️ De host heeft nog geen vragen aangemaakt. Kom later terug!</p></div>';
+        document.getElementById('rondes-container').innerHTML = '<div class="card"><p style="text-align:center;color:#7f8c8d;padding:32px">🏟️ De host heeft nog geen rondes gepubliceerd. Kom later terug!</p></div>';
         return;
       }
 
