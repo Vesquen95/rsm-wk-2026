@@ -216,6 +216,17 @@
           </select>
           <p class="punten-info">✦ Juist: ${vraag.points} punten</p>
         </div>`;
+      } else if (vraag.question_type === 'number') {
+        inputHTML = `<div class="form-group" style="margin:0">
+          <input type="number" min="0" id="input-${vraag.id}" value="${huidigAntwoord}"
+            placeholder="Vul een getal in..."
+            oninput="valideerGetal(${vraag.id}, this)"
+            style="max-width:180px">
+          <div id="fout-${vraag.id}" style="display:none;color:#c0392b;font-size:12px;margin-top:5px;font-weight:bold">
+            ⚠️ Vul enkel een geheel getal in (bv. 3)
+          </div>
+          <p class="punten-info">✦ Juist: ${vraag.points} punten</p>
+        </div>`;
       } else {
         inputHTML = `<div class="form-group" style="margin:0">
           <input type="text" id="input-${vraag.id}" value="${huidigAntwoord}" placeholder="Jouw antwoord..." oninput="slaAntwoordOpMetVertraging(${vraag.id},this.value)">
@@ -254,6 +265,20 @@
         knop.classList.add('selected-' + waarde);
       }
       await slaOp(vraagId, waarde);
+    }
+
+    function valideerGetal(vraagId, input) {
+      const waarde = input.value.trim();
+      const foutEl = document.getElementById('fout-' + vraagId);
+      // Controleer of het een geldig geheel getal is
+      if (waarde === '' || !/^\d+$/.test(waarde)) {
+        input.style.borderColor = '#c0392b';
+        if (foutEl) foutEl.style.display = 'block';
+        return;
+      }
+      input.style.borderColor = '#3f9c35';
+      if (foutEl) foutEl.style.display = 'none';
+      slaAntwoordOpMetVertraging(vraagId, waarde);
     }
 
     function slaAntwoordOpMetVertraging(vraagId, waarde) {
