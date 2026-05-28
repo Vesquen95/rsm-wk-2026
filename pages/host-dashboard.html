@@ -287,12 +287,16 @@
         const n = r.questions?.[0]?.count || 0;
         const d = r.deadline ? new Date(r.deadline).toLocaleString('nl-BE', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Geen deadline';
         return `<div class="ronde-rij">
-          <div style="display:flex;flex-direction:column;gap:2px;margin-right:8px">
-            <button class="btn btn-secondary btn-sm" style="padding:2px 7px;font-size:11px" ${i===0?'disabled':''} onclick="verschuifRonde(${r.id}, 'omhoog')">▲</button>
-            <button class="btn btn-secondary btn-sm" style="padding:2px 7px;font-size:11px" ${i===rondes.length-1?'disabled':''} onclick="verschuifRonde(${r.id}, 'omlaag')">▼</button>
+          <div style="margin-right:10px;text-align:center">
+            <div style="font-size:10px;color:#888b8d;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px">Volgorde</div>
+            <input type="number" min="1" max="${rondes.length}"
+              value="${i+1}"
+              style="width:52px;text-align:center;padding:5px 4px;font-size:15px;font-weight:bold;border:1.5px solid #d0d0d0;border-radius:4px"
+              onchange="verplaatsRonde(${r.id}, this.value, ${rondes.length})"
+              onblur="laadRondes()">
           </div>
           <div class="ronde-info">
-            <h4><span style="color:#888b8d;font-size:12px;margin-right:6px">${i+1}.</span>${r.name}</h4>
+            <h4>${r.name}</h4>
             <p>${n} vragen · 📅 ${d} · ${r.is_open ? '<span class="badge badge-open">Open</span>' : '<span class="badge badge-gesloten">Gesloten</span>'}</p>
           </div>
           <div class="ronde-acties">
@@ -303,18 +307,22 @@
       }).join('');
     }
 
-    async function verschuifRonde(id, richting) {
+    async function verplaatsRonde(id, nieuwePositie, totaal) {
+      nieuwePositie = Math.max(1, Math.min(totaal, parseInt(nieuwePositie)));
       const { data: rondes } = await db.from('rounds').select('id, sort_order').order('sort_order');
-      const idx = rondes.findIndex(r => r.id === id);
-      if (richting === 'omhoog' && idx === 0) return;
-      if (richting === 'omlaag' && idx === rondes.length - 1) return;
-      const swapIdx = richting === 'omhoog' ? idx - 1 : idx + 1;
-      const huidigeOrder = rondes[idx].sort_order;
-      const swapOrder = rondes[swapIdx].sort_order;
-      await Promise.all([
-        db.from('rounds').update({ sort_order: swapOrder }).eq('id', rondes[idx].id),
-        db.from('rounds').update({ sort_order: huidigeOrder }).eq('id', rondes[swapIdx].id),
-      ]);
+      const huidigeIdx = rondes.findIndex(r => r.id === id);
+      const nieuweIdx = nieuwePositie - 1;
+      if (huidigeIdx === nieuweIdx) return;
+
+      // Verschuif de array
+      const herordend = [...rondes];
+      const [verplaatst] = herordend.splice(huidigeIdx, 1);
+      herordend.splice(nieuweIdx, 0, verplaatst);
+
+      // Sla nieuwe sort_order op voor elk element
+      await Promise.all(herordend.map((r, i) =>
+        db.from('rounds').update({ sort_order: (i + 1) * 10 }).eq('id', r.id)
+      ));
       await laadRondes();
     }
 
