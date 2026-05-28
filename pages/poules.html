@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WK Quiz 2026 – Poule-indeling</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .poules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .poule-kaart {
+      background: white;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border: 1px solid #e0e0e0;
+    }
+
+    .poule-header {
+      background: #3f9c35;
+      color: white;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .poule-header h3 {
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .poule-label {
+      font-size: 11px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .poule-teams {
+      padding: 8px 0;
+    }
+
+    .poule-team {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      border-bottom: 1px solid #f4f4f4;
+      font-size: 14px;
+      font-weight: bold;
+      color: #1a1a1a;
+      transition: background 0.15s;
+    }
+
+    .poule-team:last-child { border-bottom: none; }
+    .poule-team:hover { background: #f9f9f9; }
+
+    .team-nr {
+      width: 20px;
+      height: 20px;
+      background: #f4f4f4;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #888b8d;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: #009cde;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+      border: 1.5px solid #009cde;
+      padding: 8px 18px;
+      border-radius: 4px;
+      transition: 0.2s;
+      font-family: Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .nav-links a:hover { background: #009cde; color: white; }
+
+    .loading-tekst {
+      text-align: center;
+      color: #888b8d;
+      padding: 40px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="navbar-brand">
+      <img src="../images/rsm-logo-white.png" alt="RSM">
+      <span class="quiz-label">WK Quiz 2026</span>
+    </a>
+    <div class="navbar-user">
+      <a href="./wedstrijden.html" class="btn-logout" target="_blank">📅 Wedstrijden</a>
+      <a href="../scoreboard.html" class="btn-logout" target="_blank">🏅 Scoreboard</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>Poule-indeling WK 2026</h1>
+      <p>12 groepen · 48 landen · USA · Canada · Mexico</p>
+    </div>
+
+    <div id="poules-container">
+      <div class="loading-tekst">
+        <div class="loading"><div class="spinner"></div> Poules laden...</div>
+      </div>
+    </div>
+
+    <div class="nav-links">
+      <a href="./wedstrijden.html" target="_blank">📅 Wedstrijden</a>
+      <a href="../scoreboard.html" target="_blank">🏅 Scoreboard</a>
+      <a href="../index.html">🔐 Inloggen</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script>
+    async function laadPoules() {
+      const { data: teams, error } = await db
+        .from('teams')
+        .select('name, group_name')
+        .order('group_name')
+        .order('name');
+
+      if (error || !teams?.length) {
+        document.getElementById('poules-container').innerHTML =
+          '<p style="text-align:center;color:#888b8d;padding:40px">Geen teams gevonden. Voer eerst het teams SQL script uit.</p>';
+        return;
+      }
+
+      // Groepeer per poule
+      const poules = {};
+      teams.forEach(t => {
+        if (!poules[t.group_name]) poules[t.group_name] = [];
+        poules[t.group_name].push(t.name);
+      });
+
+      const container = document.getElementById('poules-container');
+      container.innerHTML = '<div class="poules-grid" id="poules-grid"></div>';
+      const grid = document.getElementById('poules-grid');
+
+      Object.entries(poules).sort(([a], [b]) => a.localeCompare(b)).forEach(([groep, teamLijst]) => {
+        const kaart = document.createElement('div');
+        kaart.className = 'poule-kaart';
+        kaart.innerHTML = `
+          <div class="poule-header">
+            <h3>Groep ${groep}</h3>
+            <span class="poule-label">${teamLijst.length} landen</span>
+          </div>
+          <div class="poule-teams">
+            ${teamLijst.map((naam, i) => `
+              <div class="poule-team">
+                <span class="team-nr">${i + 1}</span>
+                <span>${naam}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        grid.appendChild(kaart);
+      });
+    }
+
+    laadPoules();
+  </script>
+</body>
+</html>
