@@ -6,27 +6,27 @@
   <title>WK Quiz 2026 – Mijn Voorspellingen</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .ronde-header { background: linear-gradient(135deg, #0f3460, #16213e); color: white; padding: 16px 20px; border-radius: 12px 12px 0 0; }
-    .ronde-header h2 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
-    .ronde-header .deadline-info { font-size: 13px; opacity: 0.8; }
-    .ronde-body { border: 1.5px solid #e0e6ed; border-top: none; border-radius: 0 0 12px 12px; padding: 20px; margin-bottom: 24px; }
+    .ronde-header { background: #3f9c35; color: white; padding: 16px 20px; border-radius: 12px 12px 0 0; }
+    .ronde-header h2 { font-size: 17px; font-weight: bold; margin-bottom: 4px; }
+    .ronde-header .deadline-info { font-size: 13px; opacity: 0.85; }
+    .ronde-body { border: 1.5px solid #3f9c35; border-top: none; border-radius: 0 0 12px 12px; padding: 20px; margin-bottom: 24px; }
     .voorbij-overlay { background: #f8f9fa; border: 1px dashed #dee2e6; border-radius: 8px; padding: 16px; text-align: center; color: #6c757d; font-size: 14px; }
     .wedstrijd-sectie { margin-bottom: 24px; }
-    .wedstrijd-sectie h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #7f8c8d; font-weight: 700; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0; }
-    .punten-info { font-size: 12px; color: #7f8c8d; margin-top: 6px; font-style: italic; }
+    .wedstrijd-sectie h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #888b8d; font-weight: bold; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0; }
+    .punten-info { font-size: 12px; color: #888b8d; margin-top: 6px; font-style: italic; }
     .auto-save-indicator {
       position: fixed; bottom: 20px; right: 20px;
-      background: #27ae60; color: white; padding: 10px 18px;
-      border-radius: 20px; font-size: 13px; font-weight: 600;
-      box-shadow: 0 4px 12px rgba(39,174,96,0.4);
+      background: #3f9c35; color: white; padding: 10px 18px;
+      border-radius: 4px; font-size: 13px; font-weight: bold;
+      box-shadow: 0 4px 12px rgba(63,156,53,0.4);
       transform: translateY(60px); transition: transform 0.3s ease; z-index: 200;
     }
     .auto-save-indicator.toon { transform: translateY(0); }
-    .welkom-banner { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    .welkom-banner { background: #009cde; color: white; padding: 16px 20px; border-radius: 6px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; border-left: 5px solid #007ab5; }
     .welkom-banner .icon { font-size: 28px; }
-    .welkom-banner h2 { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+    .welkom-banner h2 { font-size: 17px; font-weight: bold; margin-bottom: 2px; }
     .welkom-banner p { font-size: 13px; opacity: 0.9; }
-    .opgeslagen-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #27ae60; font-weight: 600; margin-top: 10px; }
+    .opgeslagen-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #3f9c35; font-weight: bold; margin-top: 10px; }
   </style>
 </head>
 <body>
