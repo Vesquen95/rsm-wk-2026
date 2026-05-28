@@ -283,12 +283,16 @@
       const { data: rondes } = await db.from('rounds').select('*, questions(count)').order('sort_order');
       const lijst = document.getElementById('rondes-lijst');
       if (!rondes?.length) { lijst.innerHTML = '<p style="text-align:center;color:#7f8c8d;padding:32px">Nog geen rondes. Maak er een aan!</p>'; return; }
-      lijst.innerHTML = rondes.map(r => {
+      lijst.innerHTML = rondes.map((r, i) => {
         const n = r.questions?.[0]?.count || 0;
         const d = r.deadline ? new Date(r.deadline).toLocaleString('nl-BE', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Geen deadline';
         return `<div class="ronde-rij">
+          <div style="display:flex;flex-direction:column;gap:2px;margin-right:8px">
+            <button class="btn btn-secondary btn-sm" style="padding:2px 7px;font-size:11px" ${i===0?'disabled':''} onclick="verschuifRonde(${r.id}, 'omhoog')">▲</button>
+            <button class="btn btn-secondary btn-sm" style="padding:2px 7px;font-size:11px" ${i===rondes.length-1?'disabled':''} onclick="verschuifRonde(${r.id}, 'omlaag')">▼</button>
+          </div>
           <div class="ronde-info">
-            <h4>${r.name}</h4>
+            <h4><span style="color:#888b8d;font-size:12px;margin-right:6px">${i+1}.</span>${r.name}</h4>
             <p>${n} vragen · 📅 ${d} · ${r.is_open ? '<span class="badge badge-open">Open</span>' : '<span class="badge badge-gesloten">Gesloten</span>'}</p>
           </div>
           <div class="ronde-acties">
@@ -297,6 +301,21 @@
           </div>
         </div>`;
       }).join('');
+    }
+
+    async function verschuifRonde(id, richting) {
+      const { data: rondes } = await db.from('rounds').select('id, sort_order').order('sort_order');
+      const idx = rondes.findIndex(r => r.id === id);
+      if (richting === 'omhoog' && idx === 0) return;
+      if (richting === 'omlaag' && idx === rondes.length - 1) return;
+      const swapIdx = richting === 'omhoog' ? idx - 1 : idx + 1;
+      const huidigeOrder = rondes[idx].sort_order;
+      const swapOrder = rondes[swapIdx].sort_order;
+      await Promise.all([
+        db.from('rounds').update({ sort_order: swapOrder }).eq('id', rondes[idx].id),
+        db.from('rounds').update({ sort_order: huidigeOrder }).eq('id', rondes[swapIdx].id),
+      ]);
+      await laadRondes();
     }
 
     function toonTab(naam) {
