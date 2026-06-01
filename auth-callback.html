@@ -31,16 +31,55 @@
   <script>
     async function handleCallback() {
       try {
-        // Wacht even zodat Supabase de URL-token kan verwerken
-        await new Promise(r => setTimeout(r, 1000));
+        const params = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
 
-        const { data: { session }, error } = await db.auth.getSession();
+        let session = null;
+        let error = null;
+
+        // Methode 1: PKCE code flow
+        const code = params.get('code');
+        if (code) {
+          const result = await db.auth.exchangeCodeForSession(code);
+          session = result.data?.session;
+          error = result.error;
+        }
+
+        // Methode 2: token_hash flow
+        if (!session) {
+          const tokenHash = params.get('token_hash');
+          const type = params.get('type');
+          if (tokenHash && type) {
+            const result = await db.auth.verifyOtp({ token_hash: tokenHash, type: type });
+            session = result.data?.session;
+            error = result.error;
+          }
+        }
+
+        // Methode 3: access_token in hash (oudere flow)
+        if (!session) {
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
+          if (accessToken) {
+            const result = await db.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+            session = result.data?.session;
+            error = result.error;
+          }
+        }
+
+        // Methode 4: bestaande sessie
+        if (!session) {
+          await new Promise(r => setTimeout(r, 500));
+          const result = await db.auth.getSession();
+          session = result.data?.session;
+          error = result.error;
+        }
 
         if (error || !session) {
           document.getElementById('icon').textContent = '❌';
           document.getElementById('titel').textContent = 'Inloggen mislukt';
           document.getElementById('bericht').textContent = 'De link is verlopen of ongeldig. Probeer opnieuw.';
-          setTimeout(() => window.location.href = './index.html', 3000);
+          setTimeout(() => window.location.href = '/rsm-wk-2026/index.html', 3000);
           return;
         }
 
@@ -55,14 +94,16 @@
         document.getElementById('bericht').textContent = 'Je wordt doorgestuurd...';
 
         setTimeout(() => {
-          window.location.href = profile?.is_host ? '/rsm-wk-2026/pages/host-dashboard.html' : '/rsm-wk-2026/pages/deelnemer.html';
+          window.location.href = profile?.is_host
+            ? '/rsm-wk-2026/pages/host-dashboard.html'
+            : '/rsm-wk-2026/pages/deelnemer.html';
         }, 1500);
 
       } catch(e) {
         document.getElementById('icon').textContent = '❌';
         document.getElementById('titel').textContent = 'Er ging iets mis';
         document.getElementById('bericht').textContent = e.message;
-        setTimeout(() => window.location.href = './index.html', 3000);
+        setTimeout(() => window.location.href = '/rsm-wk-2026/index.html', 3000);
       }
     }
 
