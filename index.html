@@ -15,231 +15,115 @@
       justify-content: center;
       padding: 20px;
     }
-
-    /* RSM kleurenbar bovenaan */
     .top-bar {
       position: fixed; top: 0; left: 0; right: 0;
       height: 5px;
       background: linear-gradient(to right, #888b8d 12%, #3f9c35 35%, #009cde 60%);
       z-index: 200;
     }
-
-    .login-wrapper {
-      width: 100%;
-      max-width: 440px;
-      margin-top: 20px;
-    }
-
-    /* RSM logo bovenaan */
-    .rsm-header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    .rsm-header img {
-      height: 56px;
-      width: auto;
-    }
-
+    .login-wrapper { width: 100%; max-width: 440px; margin-top: 20px; }
+    .rsm-header { text-align: center; margin-bottom: 28px; }
+    .rsm-header img { height: 56px; width: auto; }
     .login-box {
-      background: white;
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      background: white; border-radius: 6px; overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
     }
-
-    /* WK logo header sectie */
     .login-hero {
-      background: #000;
-      padding: 28px 32px 20px;
-      text-align: center;
-      border-bottom: 3px solid #009cde;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
+      background: #000; padding: 28px 32px 20px;
+      text-align: center; border-bottom: 3px solid #009cde;
+      display: flex; align-items: center; justify-content: center; gap: 20px;
     }
     .login-hero img.wk-logo { height: 80px; width: auto; }
-    .login-hero-tekst h1 {
-      font-size: 22px; font-weight: bold;
-      color: white; line-height: 1.2;
-      text-align: left;
-    }
+    .login-hero-tekst h1 { font-size: 22px; font-weight: bold; color: white; line-height: 1.2; text-align: left; }
     .login-hero-tekst h1 span { color: #009cde; }
-    .login-hero-tekst p {
-      color: #888b8d; font-size: 13px; margin-top: 4px; text-align: left;
-    }
-
-    /* Formulier */
+    .login-hero-tekst p { color: #888b8d; font-size: 13px; margin-top: 4px; text-align: left; }
     .login-body { padding: 28px 32px 24px; }
-
     .login-body label {
       display: block; font-size: 11px; font-weight: bold;
       color: #888b8d; margin-bottom: 6px;
       text-transform: uppercase; letter-spacing: 0.5px;
     }
-
-    .login-body input[type="email"] {
+    .login-body input {
       width: 100%; font-size: 15px; padding: 11px 13px;
       border: 1.5px solid #d0d0d0; border-radius: 4px;
-      font-family: Arial, sans-serif;
-      transition: 0.2s; box-sizing: border-box;
+      font-family: Arial, sans-serif; transition: 0.2s; box-sizing: border-box;
+      margin-bottom: 14px;
     }
     .login-body input:focus { border-color: #009cde; outline: none; box-shadow: 0 0 0 3px rgba(0,156,222,0.1); }
-
     .btn-login {
       width: 100%; padding: 12px;
-      background: #009cde;
-      color: white; border: none; border-radius: 4px;
+      background: #009cde; color: white; border: none; border-radius: 4px;
       font-size: 14px; font-weight: bold; font-family: Arial, sans-serif;
-      cursor: pointer; transition: 0.2s; margin-top: 16px;
+      cursor: pointer; transition: 0.2s; margin-top: 4px;
       letter-spacing: 0.3px; text-transform: uppercase;
     }
     .btn-login:hover { background: #007ab5; transform: translateY(-1px); }
     .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-    .info-text {
-      font-size: 12px; color: #888b8d;
-      text-align: center; margin-top: 12px; line-height: 1.6;
-    }
-
     .success-box {
-      text-align: center; padding: 22px;
-      background: #e8f5e5; border-radius: 4px;
-      margin-top: 16px; display: none;
+      text-align: center; padding: 22px; background: #e8f5e5;
+      border-radius: 4px; margin-top: 16px; display: none;
       border-left: 4px solid #3f9c35;
     }
     .success-box .icon { font-size: 36px; margin-bottom: 8px; }
     .success-box h3 { font-size: 16px; color: #1e5c18; margin-bottom: 6px; font-weight: bold; }
     .success-box p { font-size: 13px; color: #3f9c35; }
-
     #error-msg {
-      background: #fdecea; color: #c0392b;
-      padding: 10px 13px; border-radius: 4px;
-      font-size: 13px; margin-bottom: 14px; display: none;
-      border-left: 4px solid #c0392b;
+      background: #fdecea; color: #c0392b; padding: 10px 13px;
+      border-radius: 4px; font-size: 13px; margin-bottom: 14px;
+      display: none; border-left: 4px solid #c0392b;
     }
-
-    /* Onderste balk */
     .login-footer {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 14px 32px;
-      background: #f4f4f4;
-      border-top: 1px solid #e0e0e0;
+      display: flex; justify-content: center; align-items: center;
+      padding: 14px 32px; background: #f4f4f4; border-top: 1px solid #e0e0e0;
     }
     .scoreboard-link a {
-      color: #009cde; text-decoration: none;
-      font-size: 13px; font-weight: bold;
+      color: #009cde; text-decoration: none; font-size: 13px; font-weight: bold;
     }
     .scoreboard-link a:hover { text-decoration: underline; }
-
-    .btn-host {
-      background: none; border: 1.5px solid #d0d0d0;
-      color: #888b8d; padding: 6px 13px;
-      border-radius: 4px; font-size: 12px; font-weight: bold;
-      font-family: Arial, sans-serif; cursor: pointer; transition: 0.2s;
-      text-transform: uppercase; letter-spacing: 0.3px;
-    }
-    .btn-host:hover { border-color: #3f9c35; color: #3f9c35; }
-
-    /* Host modal */
-    .host-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.7); z-index: 300;
-      align-items: center; justify-content: center; padding: 20px;
-    }
-    .host-overlay.open { display: flex; }
-    .host-modal {
-      background: white; border-radius: 6px;
-      padding: 28px 32px; width: 100%; max-width: 380px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
-      border-top: 4px solid #3f9c35;
-    }
-    .host-modal h3 {
-      font-size: 18px; font-weight: bold; color: #1a1a1a;
-      margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px;
-    }
-    .host-modal p { font-size: 12px; color: #888b8d; margin-bottom: 20px; }
-    .host-modal input {
-      width: 100%; font-size: 14px; padding: 11px 13px;
-      border: 1.5px solid #d0d0d0; border-radius: 4px;
-      margin-bottom: 10px; box-sizing: border-box; font-family: Arial, sans-serif;
-    }
-    .host-modal input:focus { border-color: #3f9c35; outline: none; }
-    .btn-host-login {
-      width: 100%; padding: 12px;
-      background: #3f9c35; color: white; border: none; border-radius: 4px;
-      font-size: 14px; font-weight: bold; font-family: Arial, sans-serif;
-      cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.3px;
-    }
-    .btn-host-login:hover { background: #337a2a; }
-    .btn-host-login:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-annuleer {
-      width: 100%; padding: 9px; background: none; border: none;
-      color: #888b8d; font-size: 13px; cursor: pointer; margin-top: 8px;
-      font-family: Arial, sans-serif;
-    }
-    .btn-annuleer:hover { color: #555; }
-    #host-error {
-      background: #fdecea; color: #c0392b; padding: 9px 12px;
-      border-radius: 4px; font-size: 12px; margin-bottom: 10px;
-      display: none; border-left: 3px solid #c0392b;
-    }
-
-    /* Copyright */
-    .rsm-copyright {
-      text-align: center; margin-top: 20px;
-      color: #888b8d; font-size: 11px;
-    }
+    .rsm-copyright { text-align: center; margin-top: 20px; color: #888b8d; font-size: 11px; }
   </style>
 </head>
 <body>
   <div class="top-bar"></div>
-
   <div class="login-wrapper">
     <div class="rsm-header">
       <img src="./images/rsm-logo-white.png" alt="RSM Logo">
     </div>
-
     <div class="login-box">
       <div class="login-hero">
-        <img src="./images/wk2026-logo.webp" alt="WK 2026 Logo" class="wk-logo">
+        <img src="./images/wk2026-logo.webp" alt="WK 2026" class="wk-logo">
         <div class="login-hero-tekst">
           <h1>WK <span>Quiz</span><br>2026</h1>
           <p>Voorspel · Scoor · Win</p>
         </div>
       </div>
-
       <div class="login-body">
         <div id="error-msg"></div>
-
         <div id="form-container">
           <div class="form-group">
-            <label for="email">Jouw RSM e-mailadres</label>
+            <label for="email">E-mailadres</label>
             <input type="email" id="email" placeholder="voornaam@rsmbelgium.be" autocomplete="email">
           </div>
-          <button class="btn-login" id="btn-send" onclick="verstuurMagicLink()">
-            Stuur inloglink
+          <div class="form-group">
+            <label for="wachtwoord">Wachtwoord</label>
+            <input type="password" id="wachtwoord" placeholder="••••••••••" autocomplete="current-password">
+          </div>
+          <button class="btn-login" id="btn-login" onclick="inloggen()">
+            Inloggen
           </button>
-          <p class="info-text">
-            Je ontvangt een link per e-mail om in te loggen.<br>
-            Geen wachtwoord nodig.
-          </p>
         </div>
-
         <div class="success-box" id="success-box">
-          <div class="icon">📬</div>
-          <h3>Link verzonden!</h3>
-          <p>Controleer je inbox en klik op de link.</p>
+          <div class="icon">✅</div>
+          <h3>Ingelogd!</h3>
+          <p>Je wordt doorgestuurd...</p>
         </div>
       </div>
-
       <div class="login-footer">
         <div class="scoreboard-link">
           <a href="./scoreboard.html">🏅 Live scoreboard →</a>
         </div>
       </div>
     </div>
-
     <div class="rsm-copyright">© RSM Belgium · WK Quiz 2026</div>
   </div>
 
@@ -255,33 +139,46 @@
       } catch(e) {}
     }
 
-    async function verstuurMagicLink() {
+    async function inloggen() {
       const email = document.getElementById('email').value.trim();
-      const btn = document.getElementById('btn-send');
+      const wachtwoord = document.getElementById('wachtwoord').value;
+      const btn = document.getElementById('btn-login');
       const errorEl = document.getElementById('error-msg');
       errorEl.style.display = 'none';
-      if (!email || !email.includes('@')) {
-        errorEl.textContent = '⚠️ Vul een geldig e-mailadres in.';
+
+      if (!email || !wachtwoord) {
+        errorEl.textContent = '⚠️ Vul je e-mailadres en wachtwoord in.';
         errorEl.style.display = 'block'; return;
       }
-      btn.disabled = true; btn.textContent = 'Verzenden...';
-      const { error } = await db.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: 'https://vesquen95.github.io/rsm-wk-2026/auth-callback.html' }
-      });
+
+      btn.disabled = true; btn.textContent = 'Inloggen...';
+
+      const { data, error } = await db.auth.signInWithPassword({ email, password: wachtwoord });
+
       if (error) {
-        errorEl.textContent = '❌ ' + error.message;
+        errorEl.textContent = '❌ Fout e-mailadres of wachtwoord. Probeer opnieuw.';
         errorEl.style.display = 'block';
-        btn.disabled = false; btn.textContent = 'Stuur inloglink';
-      } else {
-        document.getElementById('form-container').style.display = 'none';
-        document.getElementById('success-box').style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Inloggen'; return;
       }
+
+      const { data: profile } = await db.from('profiles').select('is_host').eq('id', data.user.id).single();
+
+      document.getElementById('form-container').style.display = 'none';
+      document.getElementById('success-box').style.display = 'block';
+
+      setTimeout(() => {
+        window.location.href = profile?.is_host ? '/rsm-wk-2026/pages/host-dashboard.html' : '/rsm-wk-2026/pages/deelnemer.html';
+      }, 1000);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       checkSession();
-      document.getElementById('email').addEventListener('keypress', e => { if (e.key === 'Enter') verstuurMagicLink(); });
+      document.getElementById('wachtwoord').addEventListener('keypress', e => {
+        if (e.key === 'Enter') inloggen();
+      });
+      document.getElementById('email').addEventListener('keypress', e => {
+        if (e.key === 'Enter') document.getElementById('wachtwoord').focus();
+      });
     });
   </script>
 </body>
