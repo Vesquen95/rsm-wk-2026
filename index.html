@@ -217,24 +217,22 @@
       const email = document.getElementById('reset-email').value.trim();
       const errorEl = document.getElementById('error-msg');
       errorEl.style.display = 'none';
-
       if (!email || !email.includes('@')) {
         errorEl.textContent = '⚠️ Vul een geldig e-mailadres in.';
         errorEl.style.display = 'block'; return;
       }
-
       const { error } = await db.auth.resetPasswordForEmail(email, {
         redirectTo: 'https://vesquen95.github.io/rsm-wk-2026/reset-wachtwoord.html'
       });
-
       if (error) {
         errorEl.textContent = '❌ ' + error.message;
         errorEl.style.display = 'block'; return;
       }
-
       document.getElementById('reset-container').style.display = 'none';
       document.getElementById('reset-success-box').style.display = 'block';
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
       checkSession();
       document.getElementById('wachtwoord').addEventListener('keypress', e => {
         if (e.key === 'Enter') inloggen();
