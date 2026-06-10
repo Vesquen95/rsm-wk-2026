@@ -111,11 +111,42 @@
           <button class="btn-login" id="btn-login" onclick="inloggen()">
             Inloggen
           </button>
+          <div style="text-align:center;margin-top:14px">
+            <button onclick="toonResetForm()" style="background:none;border:none;color:#888b8d;font-size:12px;cursor:pointer;text-decoration:underline;font-family:Arial,sans-serif">
+              Eerste keer inloggen of wachtwoord vergeten?
+            </button>
+          </div>
         </div>
+
+        <!-- Reset wachtwoord sectie -->
+        <div id="reset-container" style="display:none">
+          <p style="font-size:13px;color:#888b8d;margin-bottom:14px;line-height:1.6">
+            Vul je e-mailadres in. Je ontvangt een link om een nieuw wachtwoord in te stellen.
+          </p>
+          <div class="form-group">
+            <label for="reset-email">E-mailadres</label>
+            <input type="email" id="reset-email" placeholder="voornaam@rsmbelgium.be">
+          </div>
+          <button class="btn-login" onclick="stuurResetLink()" style="background:#3f9c35">
+            Stuur reset link
+          </button>
+          <div style="text-align:center;margin-top:12px">
+            <button onclick="toonLoginForm()" style="background:none;border:none;color:#888b8d;font-size:12px;cursor:pointer;text-decoration:underline;font-family:Arial,sans-serif">
+              ← Terug naar inloggen
+            </button>
+          </div>
+        </div>
+
         <div class="success-box" id="success-box">
           <div class="icon">✅</div>
           <h3>Ingelogd!</h3>
           <p>Je wordt doorgestuurd...</p>
+        </div>
+
+        <div class="success-box" id="reset-success-box" style="display:none">
+          <div class="icon">📬</div>
+          <h3>Link verzonden!</h3>
+          <p>Controleer je inbox en klik op de link om een nieuw wachtwoord in te stellen.</p>
         </div>
       </div>
       <div class="login-footer">
@@ -171,7 +202,39 @@
       }, 1000);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    function toonResetForm() {
+      document.getElementById('form-container').style.display = 'none';
+      document.getElementById('reset-container').style.display = 'block';
+      document.getElementById('error-msg').style.display = 'none';
+    }
+
+    function toonLoginForm() {
+      document.getElementById('reset-container').style.display = 'none';
+      document.getElementById('form-container').style.display = 'block';
+    }
+
+    async function stuurResetLink() {
+      const email = document.getElementById('reset-email').value.trim();
+      const errorEl = document.getElementById('error-msg');
+      errorEl.style.display = 'none';
+
+      if (!email || !email.includes('@')) {
+        errorEl.textContent = '⚠️ Vul een geldig e-mailadres in.';
+        errorEl.style.display = 'block'; return;
+      }
+
+      const { error } = await db.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://vesquen95.github.io/rsm-wk-2026/reset-wachtwoord.html'
+      });
+
+      if (error) {
+        errorEl.textContent = '❌ ' + error.message;
+        errorEl.style.display = 'block'; return;
+      }
+
+      document.getElementById('reset-container').style.display = 'none';
+      document.getElementById('reset-success-box').style.display = 'block';
+    }
       checkSession();
       document.getElementById('wachtwoord').addEventListener('keypress', e => {
         if (e.key === 'Enter') inloggen();
