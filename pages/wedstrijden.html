@@ -7,112 +7,77 @@
   <link rel="stylesheet" href="../css/style.css">
   <style>
     body { background: #f4f4f4; }
-
     .container-w { max-width: 860px; margin: 0 auto; padding: 24px 14px 40px; }
-
-    /* Fase tabs - RSM stijl */
     .fase-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 20px; }
     .fase-tab {
-      padding: 7px 14px; border-radius: 3px;
-      border: 1.5px solid #d0d0d0;
-      background: white; color: #888b8d;
-      font-size: 12px; font-weight: bold;
-      font-family: Arial, sans-serif;
-      cursor: pointer; transition: 0.2s;
+      padding: 7px 14px; border-radius: 3px; border: 1.5px solid #d0d0d0;
+      background: white; color: #888b8d; font-size: 12px; font-weight: bold;
+      font-family: Arial, sans-serif; cursor: pointer; transition: 0.2s;
       text-transform: uppercase; letter-spacing: 0.3px;
     }
     .fase-tab:hover { border-color: #009cde; color: #009cde; }
     .fase-tab.actief { background: #009cde; border-color: #009cde; color: white; }
-
-    /* Dag header */
     .dag-header {
       font-size: 11px; font-weight: bold; color: #888b8d;
       text-transform: uppercase; letter-spacing: 1px;
-      margin: 18px 0 8px; padding-left: 2px;
-      border-bottom: 1px solid #e0e0e0; padding-bottom: 6px;
+      margin: 18px 0 8px; padding-bottom: 6px;
+      border-bottom: 1px solid #e0e0e0;
     }
-
-    /* Wedstrijd kaart */
     .wedstrijd-kaart {
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 6px; padding: 12px 14px;
-      margin-bottom: 6px; transition: 0.2s;
+      background: white; border: 1px solid #e0e0e0; border-radius: 6px;
+      padding: 12px 14px; margin-bottom: 6px; transition: 0.2s;
       display: grid; grid-template-columns: 1fr 86px 1fr;
       align-items: center; gap: 10px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
-    .wedstrijd-kaart:hover { border-color: #009cde; box-shadow: 0 2px 8px rgba(0,156,222,0.1); }
+    .wedstrijd-kaart:hover { border-color: #009cde; }
     .wedstrijd-kaart.belgie { border: 2px solid #3f9c35; background: #e8f5e5; }
     .wedstrijd-kaart.belgie .team-naam { color: #1e5c18; }
-    .wedstrijd-kaart.belgie .team-groep { color: #3f9c35; }
     .wedstrijd-kaart.belgie .score-display { background: #3f9c35; color: white; border-color: #337a2a; }
-    .wedstrijd-kaart.belgie .tijd-label { color: #3f9c35; }
     .wedstrijd-kaart.gespeeld { border-left: 4px solid #009cde; background: #f0faff; }
-
     .team-thuis { text-align: right; }
     .team-uit { text-align: left; }
     .team-naam { font-size: 14px; font-weight: bold; color: #1a1a1a; }
     .team-groep { font-size: 11px; color: #888b8d; margin-top: 2px; }
-
     .midden { text-align: center; }
-    .tijd-label { font-size: 10px; color: #888b8d; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .tijd-label { font-size: 10px; color: #888b8d; margin-bottom: 3px; text-transform: uppercase; }
     .score-display {
-      background: #f4f4f4; border: 1px solid #e0e0e0;
-      border-radius: 4px; padding: 5px 8px;
-      font-size: 15px; font-weight: bold; color: #1a1a1a;
-      min-width: 58px; display: inline-block; font-family: Arial, sans-serif;
+      background: #f4f4f4; border: 1px solid #e0e0e0; border-radius: 4px;
+      padding: 5px 8px; font-size: 15px; font-weight: bold; color: #1a1a1a;
+      min-width: 58px; display: inline-block;
     }
     .score-display.gespeeld { background: #e3f4fc; border-color: #009cde; color: #009cde; }
-
-    /* KO rondes */
     .ko-sectie { margin-bottom: 24px; }
-    .ko-sectie h3 { color: #009cde; font-size: 15px; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .ko-sectie h3 { color: #009cde; font-size: 15px; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; }
     .ko-sectie p { color: #888b8d; font-size: 12px; margin-bottom: 12px; }
-
     .ko-wedstrijd {
-      background: white; border: 1px solid #e0e0e0;
-      border-radius: 6px; padding: 13px 14px;
-      margin-bottom: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      background: white; border: 1px solid #e0e0e0; border-radius: 6px;
+      padding: 13px 14px; margin-bottom: 8px;
     }
-    .ko-label { font-size: 11px; color: #888b8d; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: bold; }
+    .ko-label { font-size: 11px; color: #888b8d; margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
     .ko-teams { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
     .ko-select {
-      width: 100%; padding: 9px 10px;
-      background: white; border: 1.5px solid #d0d0d0;
-      border-radius: 4px; color: #1a1a1a;
-      font-size: 13px; font-weight: bold;
-      font-family: Arial, sans-serif; cursor: pointer;
+      width: 100%; padding: 9px 10px; background: white;
+      border: 1.5px solid #d0d0d0; border-radius: 4px; color: #1a1a1a;
+      font-size: 13px; font-weight: bold; font-family: Arial, sans-serif; cursor: pointer;
     }
-    .ko-select:focus { border-color: #009cde; outline: none; }
     .ko-vs { text-align: center; color: #888b8d; font-weight: bold; font-size: 12px; }
     .ko-datum { font-size: 11px; color: #888b8d; margin-top: 7px; }
-
     .info-box {
-      background: #e3f4fc; border: 1px solid #009cde;
-      border-left: 4px solid #009cde;
-      border-radius: 4px; padding: 14px 16px;
-      margin-bottom: 18px; font-size: 13px; color: #004d70;
-      line-height: 1.6;
+      background: #e3f4fc; border: 1px solid #009cde; border-left: 4px solid #009cde;
+      border-radius: 4px; padding: 14px 16px; margin-bottom: 18px;
+      font-size: 13px; color: #004d70; line-height: 1.6;
     }
     .info-box strong { color: #009cde; }
-
     .fase-inhoud { display: none; }
     .fase-inhoud.actief { display: block; }
-
     .login-link { text-align: center; padding: 20px 0; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
     .login-link a {
       color: #009cde; text-decoration: none; font-size: 13px; font-weight: bold;
-      border: 1.5px solid #009cde; padding: 8px 18px; border-radius: 4px; transition: 0.2s;
-      font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.3px;
+      border: 1.5px solid #009cde; padding: 8px 18px; border-radius: 4px;
+      font-family: Arial, sans-serif; text-transform: uppercase;
     }
     .login-link a:hover { background: #009cde; color: white; }
-
-    @media (max-width: 600px) {
-      .wedstrijd-kaart { grid-template-columns: 1fr 70px 1fr; padding: 10px; }
-      .team-naam { font-size: 12px; }
-      .fase-tab { font-size: 11px; padding: 6px 10px; }
-    }
   </style>
 </head>
 <body>
@@ -132,6 +97,7 @@
       <h1>Wedstrijden WK 2026</h1>
       <p>Volledig speelschema · Scores worden live bijgewerkt door de host</p>
     </div>
+
     <div class="fase-tabs">
       <button class="fase-tab actief" onclick="toonFase('groep1', this)">Speeldag 1</button>
       <button class="fase-tab" onclick="toonFase('groep2', this)">Speeldag 2</button>
@@ -147,38 +113,35 @@
     <div id="fase-groep2" class="fase-inhoud"></div>
     <div id="fase-groep3" class="fase-inhoud"></div>
 
-    <!-- 1/16 FINALE -->
     <div id="fase-ro32" class="fase-inhoud">
       <div class="info-box">
         <strong>Hoe werkt de 1/16 finale?</strong><br>
-        De nummers 1 en 2 van elke groep (24 teams) + de <strong>8 beste nummers 3</strong> gaan door = 32 teams.
-        De tegenstanders van de nummers 3 hangen af van welke groepen ze komen (495 FIFA-combinaties).
-        Standaard combinatie hieronder is wanneer de beste nummers 3 uit groepen A t/m H komen.
+        De nummers 1 en 2 van elke groep (24 teams) + de <strong>8 beste nummers 3</strong> = 32 teams.
+        Speelperiode: <strong>28 juni – 3 juli 2026</strong>
       </div>
       <div class="ko-sectie">
         <h3>⚡ 1/16 finale</h3>
-        <p>Selecteer de doorgestoten teams via de dropdowns</p>
         <div id="ro32-container"></div>
       </div>
     </div>
 
     <div id="fase-ro16" class="fase-inhoud">
       <div class="ko-sectie">
-        <h3>🏆 1/8 finale</h3>
+        <h3>🏆 1/8 finale · 4–7 juli 2026</h3>
         <div id="ro16-container"></div>
       </div>
     </div>
 
     <div id="fase-kwart" class="fase-inhoud">
       <div class="ko-sectie">
-        <h3>🏆 Kwartfinale</h3>
+        <h3>🏆 Kwartfinale · 9–11 juli 2026</h3>
         <div id="kwart-container"></div>
       </div>
     </div>
 
     <div id="fase-halve" class="fase-inhoud">
       <div class="ko-sectie">
-        <h3>🏆 Halve finale</h3>
+        <h3>🏆 Halve finale · 14–15 juli 2026</h3>
         <div id="halve-container"></div>
       </div>
     </div>
@@ -199,9 +162,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
   <script>
-  // ============================================
-  // ALLE WEDSTRIJDEN DATA
-  // ============================================
   const speeldag1 = [
     { id:'A_SD1_1', datum:'11/06', tijd:'21:00', thuis:'Mexico', uit:'Zuid-Afrika', groep:'A' },
     { id:'A_SD1_2', datum:'12/06', tijd:'04:00', thuis:'Zuid-Korea', uit:'Tsjechië', groep:'A' },
@@ -256,34 +216,34 @@
     { id:'L_SD2_2', datum:'25/06', tijd:'22:00', thuis:'Panama', uit:'Engeland', groep:'L' },
   ];
 
+  // Speeldag 3: alle groepen spelen simultaan — eindigt 27 juni
   const speeldag3 = [
-    { id:'A_SD3_1', datum:'27/06', tijd:'21:00', thuis:'Mexico', uit:'Zuid-Korea', groep:'A' },
-    { id:'A_SD3_2', datum:'27/06', tijd:'21:00', thuis:'Tsjechië', uit:'Zuid-Afrika', groep:'A' },
-    { id:'B_SD3_1', datum:'28/06', tijd:'21:00', thuis:'Canada', uit:'Qatar', groep:'B' },
-    { id:'B_SD3_2', datum:'28/06', tijd:'21:00', thuis:'Zwitserland', uit:'Bosnië-Herzegovina', groep:'B' },
-    { id:'C_SD3_1', datum:'29/06', tijd:'21:00', thuis:'Brazilië', uit:'Schotland', groep:'C' },
-    { id:'C_SD3_2', datum:'29/06', tijd:'21:00', thuis:'Marokko', uit:'Haïti', groep:'C' },
-    { id:'D_SD3_1', datum:'30/06', tijd:'21:00', thuis:'Verenigde Staten', uit:'Australië', groep:'D' },
-    { id:'D_SD3_2', datum:'30/06', tijd:'21:00', thuis:'Paraguay', uit:'Turkije', groep:'D' },
-    { id:'E_SD3_1', datum:'01/07', tijd:'21:00', thuis:'Duitsland', uit:'Ivoorkust', groep:'E' },
-    { id:'E_SD3_2', datum:'01/07', tijd:'21:00', thuis:'Ecuador', uit:'Curaçao', groep:'E' },
-    { id:'F_SD3_1', datum:'02/07', tijd:'21:00', thuis:'Nederland', uit:'Zweden', groep:'F' },
-    { id:'F_SD3_2', datum:'02/07', tijd:'21:00', thuis:'Japan', uit:'Tunesië', groep:'F' },
-    { id:'G_SD3_1', datum:'03/07', tijd:'21:00', thuis:'België', uit:'Iran', groep:'G', belgie:true },
-    { id:'G_SD3_2', datum:'03/07', tijd:'21:00', thuis:'Egypte', uit:'Nieuw-Zeeland', groep:'G' },
-    { id:'H_SD3_1', datum:'04/07', tijd:'21:00', thuis:'Spanje', uit:'Uruguay', groep:'H' },
-    { id:'H_SD3_2', datum:'04/07', tijd:'21:00', thuis:'Saudi-Arabië', uit:'Kaapverdië', groep:'H' },
-    { id:'I_SD3_1', datum:'05/07', tijd:'21:00', thuis:'Frankrijk', uit:'Irak', groep:'I' },
-    { id:'I_SD3_2', datum:'05/07', tijd:'21:00', thuis:'Senegal', uit:'Noorwegen', groep:'I' },
-    { id:'J_SD3_1', datum:'06/07', tijd:'21:00', thuis:'Argentinië', uit:'Oostenrijk', groep:'J' },
-    { id:'J_SD3_2', datum:'06/07', tijd:'21:00', thuis:'Algerije', uit:'Jordanië', groep:'J' },
-    { id:'K_SD3_1', datum:'07/07', tijd:'21:00', thuis:'Portugal', uit:'Oezbekistan', groep:'K' },
-    { id:'K_SD3_2', datum:'07/07', tijd:'21:00', thuis:'Colombia', uit:'DR Congo', groep:'K' },
-    { id:'L_SD3_1', datum:'08/07', tijd:'21:00', thuis:'Engeland', uit:'Ghana', groep:'L' },
-    { id:'L_SD3_2', datum:'08/07', tijd:'21:00', thuis:'Kroatië', uit:'Panama', groep:'L' },
+    { id:'A_SD3_1', datum:'22/06', tijd:'21:00', thuis:'Mexico', uit:'Zuid-Korea', groep:'A' },
+    { id:'A_SD3_2', datum:'22/06', tijd:'21:00', thuis:'Tsjechië', uit:'Zuid-Afrika', groep:'A' },
+    { id:'B_SD3_1', datum:'23/06', tijd:'21:00', thuis:'Canada', uit:'Qatar', groep:'B' },
+    { id:'B_SD3_2', datum:'23/06', tijd:'21:00', thuis:'Zwitserland', uit:'Bosnië-Herzegovina', groep:'B' },
+    { id:'C_SD3_1', datum:'24/06', tijd:'21:00', thuis:'Brazilië', uit:'Schotland', groep:'C' },
+    { id:'C_SD3_2', datum:'24/06', tijd:'21:00', thuis:'Marokko', uit:'Haïti', groep:'C' },
+    { id:'D_SD3_1', datum:'24/06', tijd:'21:00', thuis:'Verenigde Staten', uit:'Australië', groep:'D' },
+    { id:'D_SD3_2', datum:'24/06', tijd:'21:00', thuis:'Paraguay', uit:'Turkije', groep:'D' },
+    { id:'E_SD3_1', datum:'25/06', tijd:'21:00', thuis:'Duitsland', uit:'Ivoorkust', groep:'E' },
+    { id:'E_SD3_2', datum:'25/06', tijd:'21:00', thuis:'Ecuador', uit:'Curaçao', groep:'E' },
+    { id:'F_SD3_1', datum:'25/06', tijd:'21:00', thuis:'Nederland', uit:'Zweden', groep:'F' },
+    { id:'F_SD3_2', datum:'25/06', tijd:'21:00', thuis:'Japan', uit:'Tunesië', groep:'F' },
+    { id:'G_SD3_1', datum:'26/06', tijd:'21:00', thuis:'België', uit:'Iran', groep:'G', belgie:true },
+    { id:'G_SD3_2', datum:'26/06', tijd:'21:00', thuis:'Egypte', uit:'Nieuw-Zeeland', groep:'G' },
+    { id:'H_SD3_1', datum:'26/06', tijd:'21:00', thuis:'Spanje', uit:'Uruguay', groep:'H' },
+    { id:'H_SD3_2', datum:'26/06', tijd:'21:00', thuis:'Saudi-Arabië', uit:'Kaapverdië', groep:'H' },
+    { id:'I_SD3_1', datum:'27/06', tijd:'21:00', thuis:'Frankrijk', uit:'Irak', groep:'I' },
+    { id:'I_SD3_2', datum:'27/06', tijd:'21:00', thuis:'Senegal', uit:'Noorwegen', groep:'I' },
+    { id:'J_SD3_1', datum:'27/06', tijd:'21:00', thuis:'Argentinië', uit:'Oostenrijk', groep:'J' },
+    { id:'J_SD3_2', datum:'27/06', tijd:'21:00', thuis:'Algerije', uit:'Jordanië', groep:'J' },
+    { id:'K_SD3_1', datum:'27/06', tijd:'21:00', thuis:'Portugal', uit:'Oezbekistan', groep:'K' },
+    { id:'K_SD3_2', datum:'27/06', tijd:'21:00', thuis:'Colombia', uit:'DR Congo', groep:'K' },
+    { id:'L_SD3_1', datum:'27/06', tijd:'21:00', thuis:'Engeland', uit:'Ghana', groep:'L' },
+    { id:'L_SD3_2', datum:'27/06', tijd:'21:00', thuis:'Kroatië', uit:'Panama', groep:'L' },
   ];
 
-  // Alle 48 landen
   const alleTeams = [
     'Mexico','Zuid-Afrika','Zuid-Korea','Tsjechië',
     'Canada','Bosnië-Herzegovina','Qatar','Zwitserland',
@@ -299,83 +259,77 @@
     'Engeland','Kroatië','Ghana','Panama'
   ].sort();
 
-  // ============================================
-  // 1/16 FINALE - FIFA standaard combinatie ABCDEFGH
-  // Bron: FIFA reglement bijlage C
-  // 1A-3H, 1B-3G, 1D-3B, 1E-3C, 1G-3A, 1I-3F, 1K-3D, 1L-3E
-  // ============================================
+  // 1/16 finale: 28 juni – 3 juli (16 wedstrijden)
   const ro32Wedstrijden = [
-    { id:'RO32_1', label:'Match 1', datum:'11/07', tijd:'21:00', ph1:'1e Groep A', ph2:'3e Groep H (of beste 3e)' },
-    { id:'RO32_2', label:'Match 2', datum:'11/07', tijd:'21:00', ph1:'2e Groep C', ph2:'2e Groep F' },
-    { id:'RO32_3', label:'Match 3', datum:'12/07', tijd:'21:00', ph1:'1e Groep B', ph2:'3e Groep G (of beste 3e)' },
-    { id:'RO32_4', label:'Match 4', datum:'12/07', tijd:'21:00', ph1:'2e Groep H', ph2:'2e Groep J' },
-    { id:'RO32_5', label:'Match 5', datum:'13/07', tijd:'21:00', ph1:'1e Groep D', ph2:'3e Groep B (of beste 3e)' },
-    { id:'RO32_6', label:'Match 6', datum:'13/07', tijd:'21:00', ph1:'2e Groep A', ph2:'2e Groep L' },
-    { id:'RO32_7', label:'Match 7', datum:'14/07', tijd:'21:00', ph1:'1e Groep E', ph2:'3e Groep C (of beste 3e)' },
-    { id:'RO32_8', label:'Match 8', datum:'14/07', tijd:'21:00', ph1:'2e Groep D', ph2:'2e Groep K' },
-    { id:'RO32_9', label:'Match 9', datum:'15/07', tijd:'21:00', ph1:'1e Groep G', ph2:'3e Groep A (of beste 3e)' },
-    { id:'RO32_10', label:'Match 10', datum:'15/07', tijd:'21:00', ph1:'2e Groep B', ph2:'2e Groep I' },
-    { id:'RO32_11', label:'Match 11', datum:'16/07', tijd:'21:00', ph1:'1e Groep I', ph2:'3e Groep F (of beste 3e)' },
-    { id:'RO32_12', label:'Match 12', datum:'16/07', tijd:'21:00', ph1:'2e Groep E', ph2:'2e Groep G' },
-    { id:'RO32_13', label:'Match 13', datum:'17/07', tijd:'21:00', ph1:'1e Groep K', ph2:'3e Groep D (of beste 3e)' },
-    { id:'RO32_14', label:'Match 14', datum:'17/07', tijd:'21:00', ph1:'2e Groep F', ph2:'2e Groep J' },
-    { id:'RO32_15', label:'Match 15', datum:'18/07', tijd:'21:00', ph1:'1e Groep L', ph2:'3e Groep E (of beste 3e)' },
-    { id:'RO32_16', label:'Match 16', datum:'18/07', tijd:'21:00', ph1:'1e Groep C', ph2:'1e Groep J of 1e Groep F' },
+    { id:'RO32_1',  label:'Match 1',  datum:'28/06', tijd:'21:00', ph1:'1e Groep A', ph2:'3e Groep (beste)' },
+    { id:'RO32_2',  label:'Match 2',  datum:'28/06', tijd:'21:00', ph1:'2e Groep C', ph2:'2e Groep F' },
+    { id:'RO32_3',  label:'Match 3',  datum:'29/06', tijd:'21:00', ph1:'1e Groep B', ph2:'3e Groep (beste)' },
+    { id:'RO32_4',  label:'Match 4',  datum:'29/06', tijd:'21:00', ph1:'2e Groep H', ph2:'2e Groep J' },
+    { id:'RO32_5',  label:'Match 5',  datum:'30/06', tijd:'21:00', ph1:'1e Groep D', ph2:'3e Groep (beste)' },
+    { id:'RO32_6',  label:'Match 6',  datum:'30/06', tijd:'21:00', ph1:'2e Groep A', ph2:'2e Groep L' },
+    { id:'RO32_7',  label:'Match 7',  datum:'01/07', tijd:'21:00', ph1:'1e Groep E', ph2:'3e Groep (beste)' },
+    { id:'RO32_8',  label:'Match 8',  datum:'01/07', tijd:'21:00', ph1:'2e Groep D', ph2:'2e Groep K' },
+    { id:'RO32_9',  label:'Match 9',  datum:'02/07', tijd:'21:00', ph1:'1e Groep G', ph2:'3e Groep (beste)' },
+    { id:'RO32_10', label:'Match 10', datum:'02/07', tijd:'21:00', ph1:'2e Groep B', ph2:'2e Groep I' },
+    { id:'RO32_11', label:'Match 11', datum:'02/07', tijd:'21:00', ph1:'1e Groep I', ph2:'3e Groep (beste)' },
+    { id:'RO32_12', label:'Match 12', datum:'02/07', tijd:'21:00', ph1:'2e Groep E', ph2:'2e Groep G' },
+    { id:'RO32_13', label:'Match 13', datum:'03/07', tijd:'21:00', ph1:'1e Groep K', ph2:'3e Groep (beste)' },
+    { id:'RO32_14', label:'Match 14', datum:'03/07', tijd:'21:00', ph1:'1e Groep C', ph2:'1e Groep F' },
+    { id:'RO32_15', label:'Match 15', datum:'03/07', tijd:'21:00', ph1:'1e Groep L', ph2:'3e Groep (beste)' },
+    { id:'RO32_16', label:'Match 16', datum:'03/07', tijd:'21:00', ph1:'2e Groep F', ph2:'2e Groep J' },
   ];
 
-  const ro16Wedstrijden = Array.from({length:8}, (_,i) => ({
-    id:`RO16_${i+1}`, label:`Match ${i+1}`,
-    datum:`${19+i}/07`, tijd:'21:00',
-    ph1:`Winnaar 1/16 match ${i*2+1}`,
-    ph2:`Winnaar 1/16 match ${i*2+2}`
-  }));
+  // 1/8 finale: 4–7 juli (8 wedstrijden, 2 per dag)
+  const ro16Wedstrijden = [
+    { id:'RO16_1', label:'Match 1', datum:'04/07', tijd:'21:00', ph1:'Winnaar RO32 M1', ph2:'Winnaar RO32 M2' },
+    { id:'RO16_2', label:'Match 2', datum:'04/07', tijd:'21:00', ph1:'Winnaar RO32 M3', ph2:'Winnaar RO32 M4' },
+    { id:'RO16_3', label:'Match 3', datum:'05/07', tijd:'21:00', ph1:'Winnaar RO32 M5', ph2:'Winnaar RO32 M6' },
+    { id:'RO16_4', label:'Match 4', datum:'05/07', tijd:'21:00', ph1:'Winnaar RO32 M7', ph2:'Winnaar RO32 M8' },
+    { id:'RO16_5', label:'Match 5', datum:'06/07', tijd:'21:00', ph1:'Winnaar RO32 M9', ph2:'Winnaar RO32 M10' },
+    { id:'RO16_6', label:'Match 6', datum:'06/07', tijd:'21:00', ph1:'Winnaar RO32 M11', ph2:'Winnaar RO32 M12' },
+    { id:'RO16_7', label:'Match 7', datum:'07/07', tijd:'21:00', ph1:'Winnaar RO32 M13', ph2:'Winnaar RO32 M14' },
+    { id:'RO16_8', label:'Match 8', datum:'07/07', tijd:'21:00', ph1:'Winnaar RO32 M15', ph2:'Winnaar RO32 M16' },
+  ];
 
+  // Kwartfinale: 9–11 juli (4 wedstrijden)
   const kwartWedstrijden = [
-    { id:'KF_1', label:'Kwartfinale 1', datum:'09/08', tijd:'21:00', ph1:'Winnaar 1/8 M1', ph2:'Winnaar 1/8 M2' },
-    { id:'KF_2', label:'Kwartfinale 2', datum:'10/08', tijd:'21:00', ph1:'Winnaar 1/8 M3', ph2:'Winnaar 1/8 M4' },
-    { id:'KF_3', label:'Kwartfinale 3', datum:'11/08', tijd:'21:00', ph1:'Winnaar 1/8 M5', ph2:'Winnaar 1/8 M6' },
-    { id:'KF_4', label:'Kwartfinale 4', datum:'12/08', tijd:'21:00', ph1:'Winnaar 1/8 M7', ph2:'Winnaar 1/8 M8' },
+    { id:'KF_1', label:'Kwartfinale 1', datum:'09/07', tijd:'21:00', ph1:'Winnaar 1/8 M1', ph2:'Winnaar 1/8 M2' },
+    { id:'KF_2', label:'Kwartfinale 2', datum:'09/07', tijd:'21:00', ph1:'Winnaar 1/8 M3', ph2:'Winnaar 1/8 M4' },
+    { id:'KF_3', label:'Kwartfinale 3', datum:'10/07', tijd:'21:00', ph1:'Winnaar 1/8 M5', ph2:'Winnaar 1/8 M6' },
+    { id:'KF_4', label:'Kwartfinale 4', datum:'11/07', tijd:'21:00', ph1:'Winnaar 1/8 M7', ph2:'Winnaar 1/8 M8' },
   ];
 
+  // Halve finale: 14–15 juli
   const halveWedstrijden = [
-    { id:'HF_1', label:'Halve finale 1', datum:'15/08', tijd:'21:00', ph1:'Winnaar KF 1', ph2:'Winnaar KF 2' },
-    { id:'HF_2', label:'Halve finale 2', datum:'16/08', tijd:'21:00', ph1:'Winnaar KF 3', ph2:'Winnaar KF 4' },
+    { id:'HF_1', label:'Halve finale 1', datum:'14/07', tijd:'21:00', ph1:'Winnaar KF 1', ph2:'Winnaar KF 2' },
+    { id:'HF_2', label:'Halve finale 2', datum:'15/07', tijd:'21:00', ph1:'Winnaar KF 3', ph2:'Winnaar KF 4' },
   ];
 
+  // Finale: 19 juli
   const finaleWedstrijden = [
     { id:'FINALE', label:'Finale', datum:'19/07', tijd:'21:00', ph1:'Winnaar HF 1', ph2:'Winnaar HF 2' },
   ];
 
-  // ============================================
-  // SCORES OPHALEN UIT SUPABASE
-  // ============================================
   let scores = {};
 
   async function laadScores() {
     try {
       const { data } = await db.from('match_results').select('match_id, score_thuis, score_uit, gespeeld');
-      if (data) {
-        data.forEach(r => { scores[r.match_id] = r; });
-      }
-    } catch(e) { console.log('Scores laden:', e); }
+      if (data) data.forEach(r => { scores[r.match_id] = r; });
+    } catch(e) {}
   }
 
   function getScore(matchId) {
     const s = scores[matchId];
-    if (s && s.gespeeld && s.score_thuis !== null && s.score_uit !== null) {
+    if (s && s.gespeeld && s.score_thuis !== null && s.score_uit !== null)
       return { tekst: `${s.score_thuis} - ${s.score_uit}`, gespeeld: true };
-    }
     return { tekst: '– : –', gespeeld: false };
   }
 
-  // ============================================
-  // RENDER FUNCTIES
-  // ============================================
   function renderSpeeldag(wedstrijden, containerId) {
     const container = document.getElementById(containerId);
     let huidigeDatum = '';
     let html = '';
-
     wedstrijden.forEach(w => {
       if (w.datum !== huidigeDatum) {
         huidigeDatum = w.datum;
@@ -384,23 +338,12 @@
         html += `<div class="dag-header">${datum.toLocaleDateString('nl-BE', {weekday:'long', day:'numeric', month:'long'})}</div>`;
       }
       const s = getScore(w.id);
-      html += `
-        <div class="wedstrijd-kaart ${w.belgie ? 'belgie' : ''} ${s.gespeeld ? 'gespeeld' : ''}">
-          <div class="team-thuis">
-            <div class="team-naam">${w.thuis}</div>
-            <div class="team-groep">Groep ${w.groep}</div>
-          </div>
-          <div class="midden">
-            <div class="tijd-label">${w.tijd}</div>
-            <div class="score-display ${s.gespeeld ? 'gespeeld' : ''}">${s.tekst}</div>
-          </div>
-          <div class="team-uit">
-            <div class="team-naam">${w.uit}</div>
-            <div class="team-groep">Groep ${w.groep}</div>
-          </div>
-        </div>`;
+      html += `<div class="wedstrijd-kaart ${w.belgie?'belgie':''} ${s.gespeeld?'gespeeld':''}">
+        <div class="team-thuis"><div class="team-naam">${w.thuis}</div><div class="team-groep">Groep ${w.groep}</div></div>
+        <div class="midden"><div class="tijd-label">${w.tijd}</div><div class="score-display ${s.gespeeld?'gespeeld':''}">${s.tekst}</div></div>
+        <div class="team-uit"><div class="team-naam">${w.uit}</div><div class="team-groep">Groep ${w.groep}</div></div>
+      </div>`;
     });
-
     container.innerHTML = html;
   }
 
@@ -414,16 +357,15 @@
     const container = document.getElementById(containerId);
     container.innerHTML = wedstrijden.map(w => {
       const s = getScore(w.id);
-      return `
-        <div class="ko-wedstrijd">
-          <div class="ko-label">${w.label}</div>
-          <div class="ko-teams">
-            ${maakSelect(w.ph1)}
-            <div class="ko-vs">${s.gespeeld ? `<span style="color:#2ecc71;font-size:14px">${s.tekst}</span>` : 'VS'}</div>
-            ${maakSelect(w.ph2)}
-          </div>
-          <div class="ko-datum">📅 ${w.datum} · ${w.tijd}</div>
-        </div>`;
+      return `<div class="ko-wedstrijd">
+        <div class="ko-label">${w.label}</div>
+        <div class="ko-teams">
+          ${maakSelect(w.ph1)}
+          <div class="ko-vs">${s.gespeeld ? `<span style="color:#009cde;font-size:14px">${s.tekst}</span>` : 'VS'}</div>
+          ${maakSelect(w.ph2)}
+        </div>
+        <div class="ko-datum">📅 ${w.datum} · ${w.tijd}</div>
+      </div>`;
     }).join('');
   }
 
@@ -445,15 +387,13 @@
     renderKO(halveWedstrijden, 'halve-container');
     renderKO(finaleWedstrijden, 'finale-container');
 
-    // Realtime updates
     db.channel('wedstrijden')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'match_results' }, async () => {
         await laadScores();
         renderSpeeldag(speeldag1, 'fase-groep1');
         renderSpeeldag(speeldag2, 'fase-groep2');
         renderSpeeldag(speeldag3, 'fase-groep3');
-      })
-      .subscribe();
+      }).subscribe();
   }
 
   init();
