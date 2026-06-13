@@ -108,6 +108,8 @@
       for (const ronde of rondes) container.appendChild(bouwRondeElement(ronde));
     }
 
+    let deadlineTimers = [];
+
     function bouwRondeElement(ronde) {
       const nu = new Date();
       const deadline = ronde.deadline ? new Date(ronde.deadline) : null;
@@ -120,23 +122,23 @@
       if (!ronde.is_open) deadlineText = '🔒 Ronde gesloten door host';
       else if (deadline) deadlineText = '📅 Deadline: ' + deadline.toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-      // Standaard open tenzij volledig ingevuld of gesloten
       const defaultOpen = !isVoorbij && !volledig;
 
       const wrapper = document.createElement('div');
       wrapper.style.marginBottom = '16px';
+      wrapper.id = 'ronde-wrapper-' + ronde.id;
       wrapper.innerHTML = `
         <div class="ronde-header" onclick="toggleRondeBody('ronde-body-${ronde.id}', 'ronde-pijl-${ronde.id}')" style="cursor:pointer;user-select:none">
           <div style="display:flex;align-items:center;justify-content:space-between">
             <h2>${ronde.name}</h2>
             <div style="display:flex;align-items:center;gap:10px">
-              <span style="font-size:13px;opacity:0.85">
+              <span style="font-size:13px;opacity:0.85" id="ronde-status-${ronde.id}">
                 ${volledig ? '✅' : beantwoord + '/' + vragen.length + ' ingevuld'}
               </span>
               <span id="ronde-pijl-${ronde.id}" style="font-size:16px;opacity:0.8;transition:transform 0.2s;display:inline-block;transform:${defaultOpen ? 'rotate(0deg)' : 'rotate(-90deg)'}">▼</span>
             </div>
           </div>
-          <div class="deadline-info">${deadlineText}</div>
+          <div class="deadline-info" id="ronde-deadline-tekst-${ronde.id}">${deadlineText}</div>
         </div>
         <div class="ronde-body" id="ronde-body-${ronde.id}" style="display:${defaultOpen ? 'block' : 'none'}"></div>
       `;
@@ -169,7 +171,59 @@
 
       if (!vragen.length) body.innerHTML = '<p style="text-align:center;color:#7f8c8d;padding:20px">Nog geen vragen in deze ronde.</p>';
 
+      // Start countdown timer als er een deadline is die nog niet verstreken is
+      if (deadline && ronde.is_open && !isVoorbij) {
+        startDeadlineTimer(ronde.id, deadline);
+      }
+
       return wrapper;
+    }
+
+    function startDeadlineTimer(rondeId, deadline) {
+      // Stop eventuele bestaande timer voor deze ronde
+      if (deadlineTimers[rondeId]) clearInterval(deadlineTimers[rondeId]);
+
+      deadlineTimers[rondeId] = setInterval(() => {
+        const nu = new Date();
+        const restTijd = deadline - nu;
+
+        const deadlineTekst = document.getElementById('ronde-deadline-tekst-' + rondeId);
+        const body = document.getElementById('ronde-body-' + rondeId);
+
+        if (restTijd <= 0) {
+          // Deadline verstreken — sluit en verberg vragen
+          clearInterval(deadlineTimers[rondeId]);
+
+          if (deadlineTekst) deadlineTekst.innerHTML = '⏰ Deadline verstreken — vragen gesloten';
+
+          if (body) {
+            body.innerHTML = '<div class="voorbij-overlay">⏰ De deadline is verstreken. Je antwoorden zijn opgeslagen en de vragen zijn gesloten.</div>';
+            body.style.display = 'block';
+          }
+
+          // Maak vragen niet meer klikbaar
+          const pijl = document.getElementById('ronde-pijl-' + rondeId);
+          const header = document.querySelector(`#ronde-wrapper-${rondeId} .ronde-header`);
+          if (header) header.style.cursor = 'default';
+
+        } else {
+          // Toon afteller
+          const uren = Math.floor(restTijd / 3600000);
+          const minuten = Math.floor((restTijd % 3600000) / 60000);
+          const seconden = Math.floor((restTijd % 60000) / 1000);
+
+          let countdown = '';
+          if (uren > 0) countdown = `${uren}u ${minuten}m`;
+          else if (minuten > 5) countdown = `${minuten}m`;
+          else countdown = `${minuten}m ${String(seconden).padStart(2,'0')}s`;
+
+          const kleur = restTijd < 300000 ? '#c0392b' : restTijd < 3600000 ? '#f39c12' : '#3f9c35';
+
+          if (deadlineTekst) {
+            deadlineTekst.innerHTML = `⏱️ Deadline over: <strong style="color:${kleur}">${countdown}</strong>`;
+          }
+        }
+      }, 1000);
     }
 
     function bouwVraagElement(vraag, nr) {
