@@ -171,7 +171,7 @@
 
       if (!vragen.length) body.innerHTML = '<p style="text-align:center;color:#7f8c8d;padding:20px">Nog geen vragen in deze ronde.</p>';
 
-      // Start countdown timer als er een deadline is die nog niet verstreken is
+      // Auto-sluit wanneer deadline verstrijkt
       if (deadline && ronde.is_open && !isVoorbij) {
         startDeadlineTimer(ronde.id, deadline);
       }
@@ -180,47 +180,20 @@
     }
 
     function startDeadlineTimer(rondeId, deadline) {
-      // Stop eventuele bestaande timer voor deze ronde
       if (deadlineTimers[rondeId]) clearInterval(deadlineTimers[rondeId]);
 
       deadlineTimers[rondeId] = setInterval(() => {
         const nu = new Date();
-        const restTijd = deadline - nu;
-
-        const deadlineTekst = document.getElementById('ronde-deadline-tekst-' + rondeId);
-        const body = document.getElementById('ronde-body-' + rondeId);
-
-        if (restTijd <= 0) {
-          // Deadline verstreken — sluit en verberg vragen
+        if (deadline - nu <= 0) {
           clearInterval(deadlineTimers[rondeId]);
 
-          if (deadlineTekst) deadlineTekst.innerHTML = '⏰ Deadline verstreken — vragen gesloten';
+          const deadlineTekst = document.getElementById('ronde-deadline-tekst-' + rondeId);
+          const body = document.getElementById('ronde-body-' + rondeId);
 
+          if (deadlineTekst) deadlineTekst.innerHTML = '⏰ Deadline verstreken — vragen gesloten';
           if (body) {
             body.innerHTML = '<div class="voorbij-overlay">⏰ De deadline is verstreken. Je antwoorden zijn opgeslagen en de vragen zijn gesloten.</div>';
             body.style.display = 'block';
-          }
-
-          // Maak vragen niet meer klikbaar
-          const pijl = document.getElementById('ronde-pijl-' + rondeId);
-          const header = document.querySelector(`#ronde-wrapper-${rondeId} .ronde-header`);
-          if (header) header.style.cursor = 'default';
-
-        } else {
-          // Toon afteller
-          const uren = Math.floor(restTijd / 3600000);
-          const minuten = Math.floor((restTijd % 3600000) / 60000);
-          const seconden = Math.floor((restTijd % 60000) / 1000);
-
-          let countdown = '';
-          if (uren > 0) countdown = `${uren}u ${minuten}m`;
-          else if (minuten > 5) countdown = `${minuten}m`;
-          else countdown = `${minuten}m ${String(seconden).padStart(2,'0')}s`;
-
-          const kleur = restTijd < 300000 ? '#c0392b' : restTijd < 3600000 ? '#f39c12' : '#3f9c35';
-
-          if (deadlineTekst) {
-            deadlineTekst.innerHTML = `⏱️ Deadline over: <strong style="color:${kleur}">${countdown}</strong>`;
           }
         }
       }, 1000);
