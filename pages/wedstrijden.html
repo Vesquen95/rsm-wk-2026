@@ -20,15 +20,13 @@
     .dag-header {
       font-size: 11px; font-weight: bold; color: #888b8d;
       text-transform: uppercase; letter-spacing: 1px;
-      margin: 18px 0 8px; padding-bottom: 6px;
-      border-bottom: 1px solid #e0e0e0;
+      margin: 18px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #e0e0e0;
     }
     .wedstrijd-kaart {
       background: white; border: 1px solid #e0e0e0; border-radius: 6px;
       padding: 12px 14px; margin-bottom: 6px; transition: 0.2s;
       display: grid; grid-template-columns: 1fr 86px 1fr;
-      align-items: center; gap: 10px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      align-items: center; gap: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
     .wedstrijd-kaart:hover { border-color: #009cde; }
     .wedstrijd-kaart.belgie { border: 2px solid #3f9c35; background: #e8f5e5; }
@@ -95,7 +93,7 @@
   <div class="container-w">
     <div class="page-header">
       <h1>Wedstrijden WK 2026</h1>
-      <p>Volledig speelschema · Scores worden live bijgewerkt door de host</p>
+      <p>Volledig speelschema · Alle tijden in Belgische tijd (CEST)</p>
     </div>
 
     <div class="fase-tabs">
@@ -115,9 +113,7 @@
 
     <div id="fase-ro32" class="fase-inhoud">
       <div class="info-box">
-        <strong>Hoe werkt de 1/16 finale?</strong><br>
-        De nummers 1 en 2 van elke groep (24 teams) + de <strong>8 beste nummers 3</strong> = 32 teams.
-        Speelperiode: <strong>28 juni – 3 juli 2026</strong>
+        <strong>1/16 finale:</strong> 24 groepwinnaars + 8 beste nummers 3 = 32 teams · <strong>28 juni – 4 juli 2026</strong>
       </div>
       <div class="ko-sectie">
         <h3>⚡ 1/16 finale</h3>
@@ -134,7 +130,7 @@
 
     <div id="fase-kwart" class="fase-inhoud">
       <div class="ko-sectie">
-        <h3>🏆 Kwartfinale · 9–11 juli 2026</h3>
+        <h3>🏆 Kwartfinale · 9–12 juli 2026</h3>
         <div id="kwart-container"></div>
       </div>
     </div>
@@ -162,6 +158,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
   <script>
+  // ============================================================
+  // SPEELDAG 1 - 11-18 juni
+  // ============================================================
   const speeldag1 = [
     { id:'A_SD1_1', datum:'11/06', tijd:'21:00', thuis:'Mexico', uit:'Zuid-Afrika', groep:'A' },
     { id:'A_SD1_2', datum:'12/06', tijd:'04:00', thuis:'Zuid-Korea', uit:'Tsjechië', groep:'A' },
@@ -189,59 +188,64 @@
     { id:'K_SD1_2', datum:'18/06', tijd:'04:00', thuis:'Oezbekistan', uit:'Colombia', groep:'K' },
   ];
 
+  // ============================================================
+  // SPEELDAG 2 - 18-24 juni
+  // ============================================================
   const speeldag2 = [
-    { id:'A_SD2_1', datum:'19/06', tijd:'21:00', thuis:'Zuid-Afrika', uit:'Zuid-Korea', groep:'A' },
-    { id:'A_SD2_2', datum:'20/06', tijd:'00:00', thuis:'Tsjechië', uit:'Mexico', groep:'A' },
-    { id:'B_SD2_1', datum:'20/06', tijd:'03:00', thuis:'Zwitserland', uit:'Canada', groep:'B' },
-    { id:'B_SD2_2', datum:'20/06', tijd:'21:00', thuis:'Bosnië-Herzegovina', uit:'Qatar', groep:'B' },
-    { id:'C_SD2_1', datum:'21/06', tijd:'00:00', thuis:'Schotland', uit:'Brazilië', groep:'C' },
-    { id:'C_SD2_2', datum:'21/06', tijd:'03:00', thuis:'Marokko', uit:'Haïti', groep:'C' },
-    { id:'D_SD2_1', datum:'21/06', tijd:'19:00', thuis:'Paraguay', uit:'Australië', groep:'D' },
-    { id:'D_SD2_2', datum:'21/06', tijd:'22:00', thuis:'Turkije', uit:'Verenigde Staten', groep:'D' },
-    { id:'E_SD2_1', datum:'22/06', tijd:'01:00', thuis:'Ecuador', uit:'Duitsland', groep:'E' },
-    { id:'E_SD2_2', datum:'22/06', tijd:'04:00', thuis:'Curaçao', uit:'Ivoorkust', groep:'E' },
-    { id:'F_SD2_1', datum:'22/06', tijd:'19:00', thuis:'Japan', uit:'Zweden', groep:'F' },
-    { id:'F_SD2_2', datum:'22/06', tijd:'22:00', thuis:'Tunesië', uit:'Nederland', groep:'F' },
-    { id:'G_SD2_1', datum:'23/06', tijd:'01:00', thuis:'Egypte', uit:'Iran', groep:'G' },
-    { id:'G_SD2_2', datum:'23/06', tijd:'04:00', thuis:'Nieuw-Zeeland', uit:'België', groep:'G', belgie:true },
-    { id:'H_SD2_1', datum:'23/06', tijd:'19:00', thuis:'Uruguay', uit:'Spanje', groep:'H' },
-    { id:'H_SD2_2', datum:'23/06', tijd:'22:00', thuis:'Kaapverdië', uit:'Saudi-Arabië', groep:'H' },
-    { id:'I_SD2_1', datum:'24/06', tijd:'01:00', thuis:'Senegal', uit:'Irak', groep:'I' },
-    { id:'I_SD2_2', datum:'24/06', tijd:'04:00', thuis:'Noorwegen', uit:'Frankrijk', groep:'I' },
-    { id:'J_SD2_1', datum:'24/06', tijd:'19:00', thuis:'Algerije', uit:'Oostenrijk', groep:'J' },
-    { id:'J_SD2_2', datum:'24/06', tijd:'22:00', thuis:'Jordanië', uit:'Argentinië', groep:'J' },
-    { id:'K_SD2_1', datum:'25/06', tijd:'01:00', thuis:'Colombia', uit:'Portugal', groep:'K' },
-    { id:'K_SD2_2', datum:'25/06', tijd:'04:00', thuis:'DR Congo', uit:'Oezbekistan', groep:'K' },
-    { id:'L_SD2_1', datum:'25/06', tijd:'19:00', thuis:'Kroatië', uit:'Ghana', groep:'L' },
-    { id:'L_SD2_2', datum:'25/06', tijd:'22:00', thuis:'Panama', uit:'Engeland', groep:'L' },
+    { id:'A_SD2_1', datum:'18/06', tijd:'18:00', thuis:'Tsjechië', uit:'Zuid-Afrika', groep:'A' },
+    { id:'B_SD2_1', datum:'18/06', tijd:'21:00', thuis:'Zwitserland', uit:'Bosnië-Herzegovina', groep:'B' },
+    { id:'B_SD2_2', datum:'19/06', tijd:'00:00', thuis:'Canada', uit:'Qatar', groep:'B' },
+    { id:'A_SD2_2', datum:'19/06', tijd:'03:00', thuis:'Mexico', uit:'Zuid-Korea', groep:'A' },
+    { id:'D_SD2_1', datum:'19/06', tijd:'21:00', thuis:'Verenigde Staten', uit:'Australië', groep:'D' },
+    { id:'C_SD2_1', datum:'20/06', tijd:'00:00', thuis:'Schotland', uit:'Marokko', groep:'C' },
+    { id:'C_SD2_2', datum:'20/06', tijd:'02:30', thuis:'Brazilië', uit:'Haïti', groep:'C' },
+    { id:'D_SD2_2', datum:'20/06', tijd:'05:00', thuis:'Turkije', uit:'Paraguay', groep:'D' },
+    { id:'F_SD2_1', datum:'20/06', tijd:'19:00', thuis:'Nederland', uit:'Zweden', groep:'F' },
+    { id:'E_SD2_1', datum:'20/06', tijd:'22:00', thuis:'Duitsland', uit:'Ivoorkust', groep:'E' },
+    { id:'E_SD2_2', datum:'21/06', tijd:'02:00', thuis:'Ecuador', uit:'Curaçao', groep:'E' },
+    { id:'F_SD2_2', datum:'21/06', tijd:'06:00', thuis:'Tunesië', uit:'Japan', groep:'F' },
+    { id:'H_SD2_1', datum:'21/06', tijd:'18:00', thuis:'Spanje', uit:'Saudi-Arabië', groep:'H' },
+    { id:'G_SD2_1', datum:'21/06', tijd:'21:00', thuis:'België', uit:'Iran', groep:'G', belgie:true },
+    { id:'H_SD2_2', datum:'22/06', tijd:'00:00', thuis:'Uruguay', uit:'Kaapverdië', groep:'H' },
+    { id:'G_SD2_2', datum:'22/06', tijd:'03:00', thuis:'Nieuw-Zeeland', uit:'Egypte', groep:'G' },
+    { id:'J_SD2_1', datum:'22/06', tijd:'19:00', thuis:'Argentinië', uit:'Oostenrijk', groep:'J' },
+    { id:'I_SD2_1', datum:'22/06', tijd:'23:00', thuis:'Frankrijk', uit:'Irak', groep:'I' },
+    { id:'I_SD2_2', datum:'23/06', tijd:'02:00', thuis:'Noorwegen', uit:'Senegal', groep:'I' },
+    { id:'J_SD2_2', datum:'23/06', tijd:'05:00', thuis:'Jordanië', uit:'Algerije', groep:'J' },
+    { id:'K_SD2_1', datum:'23/06', tijd:'19:00', thuis:'Portugal', uit:'Oezbekistan', groep:'K' },
+    { id:'L_SD2_1', datum:'23/06', tijd:'22:00', thuis:'Engeland', uit:'Ghana', groep:'L' },
+    { id:'L_SD2_2', datum:'24/06', tijd:'01:00', thuis:'Panama', uit:'Kroatië', groep:'L' },
+    { id:'K_SD2_2', datum:'24/06', tijd:'04:00', thuis:'Colombia', uit:'DR Congo', groep:'K' },
   ];
 
-  // Speeldag 3: alle groepen spelen simultaan — eindigt 27 juni
+  // ============================================================
+  // SPEELDAG 3 - 24-28 juni
+  // ============================================================
   const speeldag3 = [
-    { id:'A_SD3_1', datum:'22/06', tijd:'21:00', thuis:'Mexico', uit:'Zuid-Korea', groep:'A' },
-    { id:'A_SD3_2', datum:'22/06', tijd:'21:00', thuis:'Tsjechië', uit:'Zuid-Afrika', groep:'A' },
-    { id:'B_SD3_1', datum:'23/06', tijd:'21:00', thuis:'Canada', uit:'Qatar', groep:'B' },
-    { id:'B_SD3_2', datum:'23/06', tijd:'21:00', thuis:'Zwitserland', uit:'Bosnië-Herzegovina', groep:'B' },
-    { id:'C_SD3_1', datum:'24/06', tijd:'21:00', thuis:'Brazilië', uit:'Schotland', groep:'C' },
-    { id:'C_SD3_2', datum:'24/06', tijd:'21:00', thuis:'Marokko', uit:'Haïti', groep:'C' },
-    { id:'D_SD3_1', datum:'24/06', tijd:'21:00', thuis:'Verenigde Staten', uit:'Australië', groep:'D' },
-    { id:'D_SD3_2', datum:'24/06', tijd:'21:00', thuis:'Paraguay', uit:'Turkije', groep:'D' },
-    { id:'E_SD3_1', datum:'25/06', tijd:'21:00', thuis:'Duitsland', uit:'Ivoorkust', groep:'E' },
-    { id:'E_SD3_2', datum:'25/06', tijd:'21:00', thuis:'Ecuador', uit:'Curaçao', groep:'E' },
-    { id:'F_SD3_1', datum:'25/06', tijd:'21:00', thuis:'Nederland', uit:'Zweden', groep:'F' },
-    { id:'F_SD3_2', datum:'25/06', tijd:'21:00', thuis:'Japan', uit:'Tunesië', groep:'F' },
-    { id:'G_SD3_1', datum:'26/06', tijd:'21:00', thuis:'België', uit:'Iran', groep:'G', belgie:true },
-    { id:'G_SD3_2', datum:'26/06', tijd:'21:00', thuis:'Egypte', uit:'Nieuw-Zeeland', groep:'G' },
-    { id:'H_SD3_1', datum:'26/06', tijd:'21:00', thuis:'Spanje', uit:'Uruguay', groep:'H' },
-    { id:'H_SD3_2', datum:'26/06', tijd:'21:00', thuis:'Saudi-Arabië', uit:'Kaapverdië', groep:'H' },
-    { id:'I_SD3_1', datum:'27/06', tijd:'21:00', thuis:'Frankrijk', uit:'Irak', groep:'I' },
-    { id:'I_SD3_2', datum:'27/06', tijd:'21:00', thuis:'Senegal', uit:'Noorwegen', groep:'I' },
-    { id:'J_SD3_1', datum:'27/06', tijd:'21:00', thuis:'Argentinië', uit:'Oostenrijk', groep:'J' },
-    { id:'J_SD3_2', datum:'27/06', tijd:'21:00', thuis:'Algerije', uit:'Jordanië', groep:'J' },
-    { id:'K_SD3_1', datum:'27/06', tijd:'21:00', thuis:'Portugal', uit:'Oezbekistan', groep:'K' },
-    { id:'K_SD3_2', datum:'27/06', tijd:'21:00', thuis:'Colombia', uit:'DR Congo', groep:'K' },
-    { id:'L_SD3_1', datum:'27/06', tijd:'21:00', thuis:'Engeland', uit:'Ghana', groep:'L' },
-    { id:'L_SD3_2', datum:'27/06', tijd:'21:00', thuis:'Kroatië', uit:'Panama', groep:'L' },
+    { id:'B_SD3_1', datum:'24/06', tijd:'21:00', thuis:'Bosnië-Herzegovina', uit:'Qatar', groep:'B' },
+    { id:'B_SD3_2', datum:'24/06', tijd:'21:00', thuis:'Zwitserland', uit:'Canada', groep:'B' },
+    { id:'C_SD3_1', datum:'25/06', tijd:'00:00', thuis:'Schotland', uit:'Brazilië', groep:'C' },
+    { id:'C_SD3_2', datum:'25/06', tijd:'00:00', thuis:'Marokko', uit:'Haïti', groep:'C' },
+    { id:'A_SD3_1', datum:'25/06', tijd:'03:00', thuis:'Tsjechië', uit:'Mexico', groep:'A' },
+    { id:'A_SD3_2', datum:'25/06', tijd:'03:00', thuis:'Zuid-Afrika', uit:'Zuid-Korea', groep:'A' },
+    { id:'E_SD3_1', datum:'25/06', tijd:'22:00', thuis:'Ecuador', uit:'Duitsland', groep:'E' },
+    { id:'E_SD3_2', datum:'25/06', tijd:'22:00', thuis:'Curaçao', uit:'Ivoorkust', groep:'E' },
+    { id:'F_SD3_1', datum:'26/06', tijd:'01:00', thuis:'Japan', uit:'Zweden', groep:'F' },
+    { id:'F_SD3_2', datum:'26/06', tijd:'01:00', thuis:'Tunesië', uit:'Nederland', groep:'F' },
+    { id:'D_SD3_1', datum:'26/06', tijd:'04:00', thuis:'Turkije', uit:'Verenigde Staten', groep:'D' },
+    { id:'D_SD3_2', datum:'26/06', tijd:'04:00', thuis:'Paraguay', uit:'Australië', groep:'D' },
+    { id:'I_SD3_1', datum:'26/06', tijd:'21:00', thuis:'Senegal', uit:'Irak', groep:'I' },
+    { id:'I_SD3_2', datum:'26/06', tijd:'21:00', thuis:'Noorwegen', uit:'Frankrijk', groep:'I' },
+    { id:'H_SD3_1', datum:'27/06', tijd:'02:00', thuis:'Uruguay', uit:'Spanje', groep:'H' },
+    { id:'H_SD3_2', datum:'27/06', tijd:'02:00', thuis:'Kaapverdië', uit:'Saudi-Arabië', groep:'H' },
+    { id:'G_SD3_1', datum:'27/06', tijd:'05:00', thuis:'Egypte', uit:'Iran', groep:'G' },
+    { id:'G_SD3_2', datum:'27/06', tijd:'05:00', thuis:'Nieuw-Zeeland', uit:'België', groep:'G', belgie:true },
+    { id:'L_SD3_1', datum:'27/06', tijd:'23:00', thuis:'Kroatië', uit:'Ghana', groep:'L' },
+    { id:'L_SD3_2', datum:'27/06', tijd:'23:00', thuis:'Panama', uit:'Engeland', groep:'L' },
+    { id:'K_SD3_1', datum:'28/06', tijd:'01:30', thuis:'DR Congo', uit:'Oezbekistan', groep:'K' },
+    { id:'K_SD3_2', datum:'28/06', tijd:'01:30', thuis:'Colombia', uit:'Portugal', groep:'K' },
+    { id:'J_SD3_1', datum:'28/06', tijd:'04:00', thuis:'Algerije', uit:'Oostenrijk', groep:'J' },
+    { id:'J_SD3_2', datum:'28/06', tijd:'04:00', thuis:'Jordanië', uit:'Argentinië', groep:'J' },
   ];
 
   const alleTeams = [
@@ -259,57 +263,70 @@
     'Engeland','Kroatië','Ghana','Panama'
   ].sort();
 
-  // 1/16 finale: 28 juni – 3 juli (16 wedstrijden)
+  // ============================================================
+  // 1/16 FINALE - 28 juni – 4 juli
+  // ============================================================
   const ro32Wedstrijden = [
-    { id:'RO32_1',  label:'Match 1',  datum:'28/06', tijd:'21:00', ph1:'1e Groep A', ph2:'3e Groep (beste)' },
-    { id:'RO32_2',  label:'Match 2',  datum:'28/06', tijd:'21:00', ph1:'2e Groep C', ph2:'2e Groep F' },
-    { id:'RO32_3',  label:'Match 3',  datum:'29/06', tijd:'21:00', ph1:'1e Groep B', ph2:'3e Groep (beste)' },
-    { id:'RO32_4',  label:'Match 4',  datum:'29/06', tijd:'21:00', ph1:'2e Groep H', ph2:'2e Groep J' },
-    { id:'RO32_5',  label:'Match 5',  datum:'30/06', tijd:'21:00', ph1:'1e Groep D', ph2:'3e Groep (beste)' },
-    { id:'RO32_6',  label:'Match 6',  datum:'30/06', tijd:'21:00', ph1:'2e Groep A', ph2:'2e Groep L' },
-    { id:'RO32_7',  label:'Match 7',  datum:'01/07', tijd:'21:00', ph1:'1e Groep E', ph2:'3e Groep (beste)' },
-    { id:'RO32_8',  label:'Match 8',  datum:'01/07', tijd:'21:00', ph1:'2e Groep D', ph2:'2e Groep K' },
-    { id:'RO32_9',  label:'Match 9',  datum:'02/07', tijd:'21:00', ph1:'1e Groep G', ph2:'3e Groep (beste)' },
-    { id:'RO32_10', label:'Match 10', datum:'02/07', tijd:'21:00', ph1:'2e Groep B', ph2:'2e Groep I' },
-    { id:'RO32_11', label:'Match 11', datum:'02/07', tijd:'21:00', ph1:'1e Groep I', ph2:'3e Groep (beste)' },
-    { id:'RO32_12', label:'Match 12', datum:'02/07', tijd:'21:00', ph1:'2e Groep E', ph2:'2e Groep G' },
-    { id:'RO32_13', label:'Match 13', datum:'03/07', tijd:'21:00', ph1:'1e Groep K', ph2:'3e Groep (beste)' },
-    { id:'RO32_14', label:'Match 14', datum:'03/07', tijd:'21:00', ph1:'1e Groep C', ph2:'1e Groep F' },
-    { id:'RO32_15', label:'Match 15', datum:'03/07', tijd:'21:00', ph1:'1e Groep L', ph2:'3e Groep (beste)' },
-    { id:'RO32_16', label:'Match 16', datum:'03/07', tijd:'21:00', ph1:'2e Groep F', ph2:'2e Groep J' },
+    { id:'RO32_1',  label:'Match 1',  datum:'28/06', tijd:'21:00', ph1:'2e Groep A', ph2:'2e Groep B' },
+    { id:'RO32_2',  label:'Match 2',  datum:'29/06', tijd:'19:00', ph1:'1e Groep C', ph2:'2e Groep F' },
+    { id:'RO32_3',  label:'Match 3',  datum:'29/06', tijd:'22:30', ph1:'1e Groep E', ph2:'3e ABCDF' },
+    { id:'RO32_4',  label:'Match 4',  datum:'30/06', tijd:'03:00', ph1:'1e Groep F', ph2:'2e Groep C' },
+    { id:'RO32_5',  label:'Match 5',  datum:'30/06', tijd:'19:00', ph1:'2e Groep E', ph2:'2e Groep I' },
+    { id:'RO32_6',  label:'Match 6',  datum:'30/06', tijd:'23:00', ph1:'1e Groep I', ph2:'3e CDFGH' },
+    { id:'RO32_7',  label:'Match 7',  datum:'01/07', tijd:'03:00', ph1:'1e Groep A', ph2:'3e CEFHI' },
+    { id:'RO32_8',  label:'Match 8',  datum:'01/07', tijd:'18:00', ph1:'1e Groep L', ph2:'3e EHIJK' },
+    { id:'RO32_9',  label:'Match 9',  datum:'01/07', tijd:'22:00', ph1:'1e Groep G', ph2:'3e AEHIJ' },
+    { id:'RO32_10', label:'Match 10', datum:'02/07', tijd:'02:00', ph1:'1e Groep D', ph2:'3e BEFIJ' },
+    { id:'RO32_11', label:'Match 11', datum:'02/07', tijd:'21:00', ph1:'1e Groep H', ph2:'2e Groep J' },
+    { id:'RO32_12', label:'Match 12', datum:'03/07', tijd:'01:00', ph1:'2e Groep K', ph2:'2e Groep L' },
+    { id:'RO32_13', label:'Match 13', datum:'03/07', tijd:'05:00', ph1:'1e Groep B', ph2:'3e EFGIJ' },
+    { id:'RO32_14', label:'Match 14', datum:'03/07', tijd:'20:00', ph1:'2e Groep D', ph2:'2e Groep G' },
+    { id:'RO32_15', label:'Match 15', datum:'04/07', tijd:'00:00', ph1:'1e Groep J', ph2:'2e Groep H' },
+    { id:'RO32_16', label:'Match 16', datum:'04/07', tijd:'03:30', ph1:'1e Groep K', ph2:'3e DEIJL' },
   ];
 
-  // 1/8 finale: 4–7 juli (8 wedstrijden, 2 per dag)
+  // ============================================================
+  // 1/8 FINALE - 4-7 juli
+  // ============================================================
   const ro16Wedstrijden = [
-    { id:'RO16_1', label:'Match 1', datum:'04/07', tijd:'21:00', ph1:'Winnaar RO32 M1', ph2:'Winnaar RO32 M2' },
-    { id:'RO16_2', label:'Match 2', datum:'04/07', tijd:'21:00', ph1:'Winnaar RO32 M3', ph2:'Winnaar RO32 M4' },
-    { id:'RO16_3', label:'Match 3', datum:'05/07', tijd:'21:00', ph1:'Winnaar RO32 M5', ph2:'Winnaar RO32 M6' },
-    { id:'RO16_4', label:'Match 4', datum:'05/07', tijd:'21:00', ph1:'Winnaar RO32 M7', ph2:'Winnaar RO32 M8' },
-    { id:'RO16_5', label:'Match 5', datum:'06/07', tijd:'21:00', ph1:'Winnaar RO32 M9', ph2:'Winnaar RO32 M10' },
-    { id:'RO16_6', label:'Match 6', datum:'06/07', tijd:'21:00', ph1:'Winnaar RO32 M11', ph2:'Winnaar RO32 M12' },
-    { id:'RO16_7', label:'Match 7', datum:'07/07', tijd:'21:00', ph1:'Winnaar RO32 M13', ph2:'Winnaar RO32 M14' },
-    { id:'RO16_8', label:'Match 8', datum:'07/07', tijd:'21:00', ph1:'Winnaar RO32 M15', ph2:'Winnaar RO32 M16' },
+    { id:'RO16_1', label:'Match 1', datum:'04/07', tijd:'19:00', ph1:'Winnaar M1 (2A/2B)', ph2:'Winnaar M4 (1F/2C)' },
+    { id:'RO16_2', label:'Match 2', datum:'04/07', tijd:'23:00', ph1:'Winnaar M3 (1E/3ABCDF)', ph2:'Winnaar M6 (1I/3CDFGH)' },
+    { id:'RO16_3', label:'Match 3', datum:'05/07', tijd:'22:00', ph1:'Winnaar M2 (1C/2F)', ph2:'Winnaar M5 (2E/2I)' },
+    { id:'RO16_4', label:'Match 4', datum:'06/07', tijd:'02:00', ph1:'Winnaar M7 (1A/3CEFHI)', ph2:'Winnaar M8 (1L/3EHIJK)' },
+    { id:'RO16_5', label:'Match 5', datum:'06/07', tijd:'21:00', ph1:'Winnaar M12 (2K/2L)', ph2:'Winnaar M11 (1H/2J)' },
+    { id:'RO16_6', label:'Match 6', datum:'07/07', tijd:'02:00', ph1:'Winnaar M10 (1D/3BEFIJ)', ph2:'Winnaar M9 (1G/3AEHIJ)' },
+    { id:'RO16_7', label:'Match 7', datum:'07/07', tijd:'18:00', ph1:'Winnaar M15 (1J/2H)', ph2:'Winnaar M14 (2D/2G)' },
+    { id:'RO16_8', label:'Match 8', datum:'07/07', tijd:'22:00', ph1:'Winnaar M13 (1B/3EFGIJ)', ph2:'Winnaar M16 (1K/3DEIJL)' },
   ];
 
-  // Kwartfinale: 9–11 juli (4 wedstrijden)
+  // ============================================================
+  // KWARTFINALE - 9-12 juli
+  // ============================================================
   const kwartWedstrijden = [
-    { id:'KF_1', label:'Kwartfinale 1', datum:'09/07', tijd:'21:00', ph1:'Winnaar 1/8 M1', ph2:'Winnaar 1/8 M2' },
-    { id:'KF_2', label:'Kwartfinale 2', datum:'09/07', tijd:'21:00', ph1:'Winnaar 1/8 M3', ph2:'Winnaar 1/8 M4' },
-    { id:'KF_3', label:'Kwartfinale 3', datum:'10/07', tijd:'21:00', ph1:'Winnaar 1/8 M5', ph2:'Winnaar 1/8 M6' },
-    { id:'KF_4', label:'Kwartfinale 4', datum:'11/07', tijd:'21:00', ph1:'Winnaar 1/8 M7', ph2:'Winnaar 1/8 M8' },
+    { id:'KF_1', label:'Kwartfinale 1', datum:'09/07', tijd:'22:00', ph1:'Winnaar 1/8 M3', ph2:'Winnaar 1/8 M1' },
+    { id:'KF_2', label:'Kwartfinale 2', datum:'10/07', tijd:'21:00', ph1:'Winnaar 1/8 M5', ph2:'Winnaar 1/8 M6' },
+    { id:'KF_3', label:'Kwartfinale 3', datum:'11/07', tijd:'23:00', ph1:'Winnaar 1/8 M2', ph2:'Winnaar 1/8 M4' },
+    { id:'KF_4', label:'Kwartfinale 4', datum:'12/07', tijd:'03:00', ph1:'Winnaar 1/8 M7', ph2:'Winnaar 1/8 M8' },
   ];
 
-  // Halve finale: 14–15 juli
+  // ============================================================
+  // HALVE FINALE - 14-15 juli
+  // ============================================================
   const halveWedstrijden = [
     { id:'HF_1', label:'Halve finale 1', datum:'14/07', tijd:'21:00', ph1:'Winnaar KF 1', ph2:'Winnaar KF 2' },
     { id:'HF_2', label:'Halve finale 2', datum:'15/07', tijd:'21:00', ph1:'Winnaar KF 3', ph2:'Winnaar KF 4' },
   ];
 
-  // Finale: 19 juli
+  // ============================================================
+  // FINALE - 19 juli
+  // ============================================================
   const finaleWedstrijden = [
     { id:'FINALE', label:'Finale', datum:'19/07', tijd:'21:00', ph1:'Winnaar HF 1', ph2:'Winnaar HF 2' },
   ];
 
+  // ============================================================
+  // SCORES & RENDER
+  // ============================================================
   let scores = {};
 
   async function laadScores() {
@@ -386,7 +403,6 @@
     renderKO(kwartWedstrijden, 'kwart-container');
     renderKO(halveWedstrijden, 'halve-container');
     renderKO(finaleWedstrijden, 'finale-container');
-
     db.channel('wedstrijden')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'match_results' }, async () => {
         await laadScores();
@@ -395,7 +411,6 @@
         renderSpeeldag(speeldag3, 'fase-groep3');
       }).subscribe();
   }
-
   init();
   </script>
 </body>
