@@ -52,15 +52,10 @@
       background: white; border: 1px solid #e0e0e0; border-radius: 6px;
       padding: 13px 14px; margin-bottom: 8px;
     }
+    .ko-wedstrijd.gespeeld { border-left: 4px solid #009cde; background: #f0faff; }
     .ko-label { font-size: 11px; color: #888b8d; margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
-    .ko-teams { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
-    .ko-select {
-      width: 100%; padding: 9px 10px; background: white;
-      border: 1.5px solid #d0d0d0; border-radius: 4px; color: #1a1a1a;
-      font-size: 13px; font-weight: bold; font-family: Arial, sans-serif; cursor: pointer;
-    }
-    .ko-vs { text-align: center; color: #888b8d; font-weight: bold; font-size: 12px; }
-    .ko-datum { font-size: 11px; color: #888b8d; margin-top: 7px; }
+    .ko-teams { display: flex; align-items: center; gap: 10px; }
+    .ko-vs { text-align: center; color: #888b8d; font-weight: bold; font-size: 12px; min-width: 70px; }
     .info-box {
       background: #e3f4fc; border: 1px solid #009cde; border-left: 4px solid #009cde;
       border-radius: 4px; padding: 14px 16px; margin-bottom: 18px;
@@ -325,13 +320,199 @@
   ];
 
   // ============================================================
-  // SCORES & RENDER
+  // SCORES & STANDSBEREKENING
   // ============================================================
   let scores = {};
 
+  // Alle groepswedstrijden voor standsberekening
+  const groepWedstrijden = [
+    {id:'A_SD1_1',thuis:'Mexico',uit:'Zuid-Afrika',groep:'A'},
+    {id:'A_SD1_2',thuis:'Zuid-Korea',uit:'Tsjechië',groep:'A'},
+    {id:'B_SD1_1',thuis:'Canada',uit:'Bosnië-Herzegovina',groep:'B'},
+    {id:'B_SD1_2',thuis:'Qatar',uit:'Zwitserland',groep:'B'},
+    {id:'C_SD1_1',thuis:'Brazilië',uit:'Marokko',groep:'C'},
+    {id:'C_SD1_2',thuis:'Haïti',uit:'Schotland',groep:'C'},
+    {id:'D_SD1_1',thuis:'Verenigde Staten',uit:'Paraguay',groep:'D'},
+    {id:'D_SD1_2',thuis:'Australië',uit:'Turkije',groep:'D'},
+    {id:'E_SD1_1',thuis:'Duitsland',uit:'Curaçao',groep:'E'},
+    {id:'E_SD1_2',thuis:'Ivoorkust',uit:'Ecuador',groep:'E'},
+    {id:'F_SD1_1',thuis:'Nederland',uit:'Japan',groep:'F'},
+    {id:'F_SD1_2',thuis:'Zweden',uit:'Tunesië',groep:'F'},
+    {id:'G_SD1_1',thuis:'België',uit:'Egypte',groep:'G'},
+    {id:'G_SD1_2',thuis:'Iran',uit:'Nieuw-Zeeland',groep:'G'},
+    {id:'H_SD1_1',thuis:'Spanje',uit:'Kaapverdië',groep:'H'},
+    {id:'H_SD1_2',thuis:'Saudi-Arabië',uit:'Uruguay',groep:'H'},
+    {id:'I_SD1_1',thuis:'Frankrijk',uit:'Senegal',groep:'I'},
+    {id:'I_SD1_2',thuis:'Irak',uit:'Noorwegen',groep:'I'},
+    {id:'J_SD1_1',thuis:'Argentinië',uit:'Algerije',groep:'J'},
+    {id:'J_SD1_2',thuis:'Oostenrijk',uit:'Jordanië',groep:'J'},
+    {id:'K_SD1_1',thuis:'Portugal',uit:'DR Congo',groep:'K'},
+    {id:'K_SD1_2',thuis:'Oezbekistan',uit:'Colombia',groep:'K'},
+    {id:'L_SD1_1',thuis:'Engeland',uit:'Kroatië',groep:'L'},
+    {id:'L_SD1_2',thuis:'Ghana',uit:'Panama',groep:'L'},
+    {id:'A_SD2_1',thuis:'Tsjechië',uit:'Zuid-Afrika',groep:'A'},
+    {id:'A_SD2_2',thuis:'Mexico',uit:'Zuid-Korea',groep:'A'},
+    {id:'B_SD2_1',thuis:'Zwitserland',uit:'Bosnië-Herzegovina',groep:'B'},
+    {id:'B_SD2_2',thuis:'Canada',uit:'Qatar',groep:'B'},
+    {id:'C_SD2_1',thuis:'Schotland',uit:'Marokko',groep:'C'},
+    {id:'C_SD2_2',thuis:'Brazilië',uit:'Haïti',groep:'C'},
+    {id:'D_SD2_1',thuis:'Verenigde Staten',uit:'Australië',groep:'D'},
+    {id:'D_SD2_2',thuis:'Turkije',uit:'Paraguay',groep:'D'},
+    {id:'E_SD2_1',thuis:'Duitsland',uit:'Ivoorkust',groep:'E'},
+    {id:'E_SD2_2',thuis:'Ecuador',uit:'Curaçao',groep:'E'},
+    {id:'F_SD2_1',thuis:'Nederland',uit:'Zweden',groep:'F'},
+    {id:'F_SD2_2',thuis:'Tunesië',uit:'Japan',groep:'F'},
+    {id:'G_SD2_1',thuis:'België',uit:'Iran',groep:'G'},
+    {id:'G_SD2_2',thuis:'Nieuw-Zeeland',uit:'Egypte',groep:'G'},
+    {id:'H_SD2_1',thuis:'Spanje',uit:'Saudi-Arabië',groep:'H'},
+    {id:'H_SD2_2',thuis:'Uruguay',uit:'Kaapverdië',groep:'H'},
+    {id:'I_SD2_1',thuis:'Frankrijk',uit:'Irak',groep:'I'},
+    {id:'I_SD2_2',thuis:'Noorwegen',uit:'Senegal',groep:'I'},
+    {id:'J_SD2_1',thuis:'Argentinië',uit:'Oostenrijk',groep:'J'},
+    {id:'J_SD2_2',thuis:'Jordanië',uit:'Algerije',groep:'J'},
+    {id:'K_SD2_1',thuis:'Portugal',uit:'Oezbekistan',groep:'K'},
+    {id:'K_SD2_2',thuis:'Colombia',uit:'DR Congo',groep:'K'},
+    {id:'L_SD2_1',thuis:'Engeland',uit:'Ghana',groep:'L'},
+    {id:'L_SD2_2',thuis:'Panama',uit:'Kroatië',groep:'L'},
+    {id:'B_SD3_1',thuis:'Bosnië-Herzegovina',uit:'Qatar',groep:'B'},
+    {id:'B_SD3_2',thuis:'Zwitserland',uit:'Canada',groep:'B'},
+    {id:'C_SD3_1',thuis:'Schotland',uit:'Brazilië',groep:'C'},
+    {id:'C_SD3_2',thuis:'Marokko',uit:'Haïti',groep:'C'},
+    {id:'A_SD3_1',thuis:'Tsjechië',uit:'Mexico',groep:'A'},
+    {id:'A_SD3_2',thuis:'Zuid-Afrika',uit:'Zuid-Korea',groep:'A'},
+    {id:'E_SD3_1',thuis:'Ecuador',uit:'Duitsland',groep:'E'},
+    {id:'E_SD3_2',thuis:'Curaçao',uit:'Ivoorkust',groep:'E'},
+    {id:'F_SD3_1',thuis:'Japan',uit:'Zweden',groep:'F'},
+    {id:'F_SD3_2',thuis:'Tunesië',uit:'Nederland',groep:'F'},
+    {id:'D_SD3_1',thuis:'Turkije',uit:'Verenigde Staten',groep:'D'},
+    {id:'D_SD3_2',thuis:'Paraguay',uit:'Australië',groep:'D'},
+    {id:'I_SD3_1',thuis:'Senegal',uit:'Irak',groep:'I'},
+    {id:'I_SD3_2',thuis:'Noorwegen',uit:'Frankrijk',groep:'I'},
+    {id:'H_SD3_1',thuis:'Uruguay',uit:'Spanje',groep:'H'},
+    {id:'H_SD3_2',thuis:'Kaapverdië',uit:'Saudi-Arabië',groep:'H'},
+    {id:'G_SD3_1',thuis:'Egypte',uit:'Iran',groep:'G'},
+    {id:'G_SD3_2',thuis:'Nieuw-Zeeland',uit:'België',groep:'G'},
+    {id:'L_SD3_1',thuis:'Kroatië',uit:'Ghana',groep:'L'},
+    {id:'L_SD3_2',thuis:'Panama',uit:'Engeland',groep:'L'},
+    {id:'K_SD3_1',thuis:'DR Congo',uit:'Oezbekistan',groep:'K'},
+    {id:'K_SD3_2',thuis:'Colombia',uit:'Portugal',groep:'K'},
+    {id:'J_SD3_1',thuis:'Algerije',uit:'Oostenrijk',groep:'J'},
+    {id:'J_SD3_2',thuis:'Jordanië',uit:'Argentinië',groep:'J'},
+  ];
+
+  const groepTeams = {
+    A:['Mexico','Zuid-Afrika','Zuid-Korea','Tsjechië'],
+    B:['Canada','Bosnië-Herzegovina','Qatar','Zwitserland'],
+    C:['Brazilië','Marokko','Haïti','Schotland'],
+    D:['Verenigde Staten','Paraguay','Australië','Turkije'],
+    E:['Duitsland','Curaçao','Ivoorkust','Ecuador'],
+    F:['Nederland','Japan','Zweden','Tunesië'],
+    G:['België','Egypte','Iran','Nieuw-Zeeland'],
+    H:['Spanje','Kaapverdië','Saudi-Arabië','Uruguay'],
+    I:['Frankrijk','Senegal','Irak','Noorwegen'],
+    J:['Argentinië','Algerije','Oostenrijk','Jordanië'],
+    K:['Portugal','DR Congo','Oezbekistan','Colombia'],
+    L:['Engeland','Kroatië','Ghana','Panama'],
+  };
+
+  function berekenStand(groep) {
+    const stand = {};
+    groepTeams[groep].forEach(t => { stand[t] = {team:t,groep:groep,gs:0,w:0,g:0,v:0,dv:0,dt:0,pts:0}; });
+    groepWedstrijden.filter(w => w.groep === groep).forEach(w => {
+      const s = scores[w.id];
+      if (!s || !s.gespeeld || s.score_thuis === null) return;
+      const st = s.score_thuis, su = s.score_uit;
+      stand[w.thuis].gs++; stand[w.uit].gs++;
+      stand[w.thuis].dv += st; stand[w.thuis].dt += su;
+      stand[w.uit].dv += su; stand[w.uit].dt += st;
+      if (st > su) { stand[w.thuis].w++; stand[w.thuis].pts+=3; stand[w.uit].v++; }
+      else if (st === su) { stand[w.thuis].g++; stand[w.thuis].pts++; stand[w.uit].g++; stand[w.uit].pts++; }
+      else { stand[w.uit].w++; stand[w.uit].pts+=3; stand[w.thuis].v++; }
+    });
+    return Object.values(stand).sort((a,b) => {
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      const da = a.dv-a.dt, db = b.dv-b.dt;
+      if (db !== da) return db - da;
+      return b.dv - a.dv;
+    });
+  }
+
+  // Haal team op positie (1=eerste, 2=tweede, 3=derde)
+  function getTeam(groep, positie) {
+    const stand = berekenStand(groep);
+    const team = stand[positie - 1];
+    return team ? { naam: team.team, bekend: team.gs >= 1 } : { naam: `${positie}e Gr. ${groep}`, bekend: false };
+  }
+
+  // Beste 3e team uit lijst van groepen
+  function getBeste3e(groepLetters, uitgesloten = []) {
+    const kandidaten = groepLetters
+      .map(g => { const s = berekenStand(g); return s[2]; })
+      .filter(t => t && !uitgesloten.includes(t.team))
+      .sort((a,b) => {
+        if (b.pts !== a.pts) return b.pts - a.pts;
+        const da = a.dv-a.dt, db = b.dv-b.dt;
+        if (db !== da) return db - da;
+        return b.dv - a.dv;
+      });
+    if (!kandidaten.length) return { naam: `3e beste`, bekend: false };
+    const beste = kandidaten[0];
+    return { naam: beste.team, bekend: beste.gs >= 3 };
+  }
+
+  // Haal winnaar op van een KO-wedstrijd
+  function getWinnaar(matchId, label) {
+    const s = scores[matchId];
+    if (!s || !s.gespeeld) return { naam: `Winnaar ${label}`, bekend: false };
+    if (s.score_thuis > s.score_uit) {
+      return { naam: s.thuis || `Winnaar ${label}`, bekend: !!s.thuis };
+    } else if (s.score_uit > s.score_thuis) {
+      return { naam: s.uit || `Winnaar ${label}`, bekend: !!s.uit };
+    }
+    return { naam: `Winnaar ${label}`, bekend: false };
+  }
+
+  // Bepaal teams voor alle 1/16 matches
+  function berekenRO32Teams() {
+    // Bereken alle 3e-plaatsers eerst voor de greedy assignment
+    const derde3eUitgesloten = [];
+    const ro32Teams = {};
+
+    const slots = [
+      { id:'RO32_1',  t1: getTeam('A',2),    t2: getTeam('B',2) },
+      { id:'RO32_2',  t1: getTeam('C',1),    t2: getTeam('F',2) },
+      { id:'RO32_4',  t1: getTeam('F',1),    t2: getTeam('C',2) },
+      { id:'RO32_5',  t1: getTeam('E',2),    t2: getTeam('I',2) },
+      { id:'RO32_11', t1: getTeam('H',1),    t2: getTeam('J',2) },
+      { id:'RO32_12', t1: getTeam('K',2),    t2: getTeam('L',2) },
+      { id:'RO32_14', t1: getTeam('D',2),    t2: getTeam('G',2) },
+      { id:'RO32_15', t1: getTeam('J',1),    t2: getTeam('H',2) },
+    ];
+
+    // 3e plaatssers per slot
+    const slots3e = [
+      { id:'RO32_3',  t1: getTeam('E',1), groepen3e:['A','B','C','D','F'] },
+      { id:'RO32_6',  t1: getTeam('I',1), groepen3e:['C','D','F','G','H'] },
+      { id:'RO32_7',  t1: getTeam('A',1), groepen3e:['C','E','F','H','I'] },
+      { id:'RO32_8',  t1: getTeam('L',1), groepen3e:['E','H','I','J','K'] },
+      { id:'RO32_9',  t1: getTeam('G',1), groepen3e:['A','E','H','I','J'] },
+      { id:'RO32_10', t1: getTeam('D',1), groepen3e:['B','E','F','I','J'] },
+      { id:'RO32_13', t1: getTeam('B',1), groepen3e:['E','F','G','I','J'] },
+      { id:'RO32_16', t1: getTeam('K',1), groepen3e:['D','E','I','J','L'] },
+    ];
+
+    slots.forEach(s => { ro32Teams[s.id] = { t1: s.t1, t2: s.t2 }; });
+    slots3e.forEach(s => {
+      const t2 = getBeste3e(s.groepen3e, derde3eUitgesloten);
+      if (t2.bekend) derde3eUitgesloten.push(t2.naam);
+      ro32Teams[s.id] = { t1: s.t1, t2 };
+    });
+    return ro32Teams;
+  }
+
   async function laadScores() {
     try {
-      const { data } = await db.from('match_results').select('match_id, score_thuis, score_uit, gespeeld');
+      const { data } = await db.from('match_results').select('*');
       if (data) data.forEach(r => { scores[r.match_id] = r; });
     } catch(e) {}
   }
@@ -364,24 +545,45 @@
     container.innerHTML = html;
   }
 
-  function maakSelect(placeholder) {
-    let opts = `<option value="">${placeholder}</option>`;
-    alleTeams.forEach(t => { opts += `<option value="${t}">${t}</option>`; });
-    return `<select class="ko-select">${opts}</select>`;
+  function teamNaamHtml(team) {
+    const kleur = team.bekend ? '#1a1a1a' : '#888b8d';
+    const stijl = team.bekend ? 'font-weight:bold' : 'font-style:italic;font-size:12px';
+    return `<span style="color:${kleur};${stijl}">${team.naam}</span>`;
   }
 
-  function renderKO(wedstrijden, containerId) {
+  function renderRO32(teams) {
+    const container = document.getElementById('ro32-container');
+    container.innerHTML = ro32Wedstrijden.map(w => {
+      const s = getScore(w.id);
+      const t = teams[w.id] || { t1:{ naam:w.ph1, bekend:false }, t2:{ naam:w.ph2, bekend:false } };
+      return `<div class="ko-wedstrijd ${s.gespeeld ? 'gespeeld' : ''}">
+        <div class="ko-label">${w.label} · ${w.datum} · ${w.tijd}</div>
+        <div class="ko-teams">
+          <div style="text-align:right;flex:1;padding:8px">${teamNaamHtml(t.t1)}</div>
+          <div class="ko-vs" style="min-width:70px;text-align:center">
+            ${s.gespeeld ? `<span style="color:#009cde;font-size:15px;font-weight:bold">${s.tekst}</span>` : '<span style="color:#d0d0d0;font-size:13px">– : –</span>'}
+          </div>
+          <div style="text-align:left;flex:1;padding:8px">${teamNaamHtml(t.t2)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderKOAuto(wedstrijden, containerId, teamFn) {
     const container = document.getElementById(containerId);
     container.innerHTML = wedstrijden.map(w => {
       const s = getScore(w.id);
-      return `<div class="ko-wedstrijd">
-        <div class="ko-label">${w.label}</div>
+      const t1 = teamFn(w.id, 't1', w.ph1);
+      const t2 = teamFn(w.id, 't2', w.ph2);
+      return `<div class="ko-wedstrijd ${s.gespeeld ? 'gespeeld' : ''}">
+        <div class="ko-label">${w.label} · ${w.datum} · ${w.tijd}</div>
         <div class="ko-teams">
-          ${maakSelect(w.ph1)}
-          <div class="ko-vs">${s.gespeeld ? `<span style="color:#009cde;font-size:14px">${s.tekst}</span>` : 'VS'}</div>
-          ${maakSelect(w.ph2)}
+          <div style="text-align:right;flex:1;padding:8px">${teamNaamHtml(t1)}</div>
+          <div class="ko-vs" style="min-width:70px;text-align:center">
+            ${s.gespeeld ? `<span style="color:#009cde;font-size:15px;font-weight:bold">${s.tekst}</span>` : '<span style="color:#d0d0d0;font-size:13px">– : –</span>'}
+          </div>
+          <div style="text-align:left;flex:1;padding:8px">${teamNaamHtml(t2)}</div>
         </div>
-        <div class="ko-datum">📅 ${w.datum} · ${w.tijd}</div>
       </div>`;
     }).join('');
   }
@@ -393,22 +595,107 @@
     knop.classList.add('actief');
   }
 
-  async function init() {
-    await laadScores();
+  function renderAlles() {
     renderSpeeldag(speeldag1, 'fase-groep1');
     renderSpeeldag(speeldag2, 'fase-groep2');
     renderSpeeldag(speeldag3, 'fase-groep3');
-    renderKO(ro32Wedstrijden, 'ro32-container');
-    renderKO(ro16Wedstrijden, 'ro16-container');
-    renderKO(kwartWedstrijden, 'kwart-container');
-    renderKO(halveWedstrijden, 'halve-container');
-    renderKO(finaleWedstrijden, 'finale-container');
+
+    // 1/16 finale — automatisch teams vanuit poulestand
+    const ro32Teams = berekenRO32Teams();
+    renderRO32(ro32Teams);
+
+    // 1/8 finale — winnaars van 1/16
+    const ro32Labels = { RO32_1:'M1',RO32_2:'M2',RO32_3:'M3',RO32_4:'M4',RO32_5:'M5',RO32_6:'M6',RO32_7:'M7',RO32_8:'M8',RO32_9:'M9',RO32_10:'M10',RO32_11:'M11',RO32_12:'M12',RO32_13:'M13',RO32_14:'M14',RO32_15:'M15',RO32_16:'M16' };
+    // Sla winnaar op per RO32 match
+    const ro32Winnaars = {};
+    ro32Wedstrijden.forEach(w => {
+      const s = scores[w.id];
+      const t = ro32Teams[w.id];
+      if (s && s.gespeeld && t) {
+        ro32Winnaars[w.id] = s.score_thuis > s.score_uit
+          ? { naam: t.t1.naam, bekend: true }
+          : s.score_uit > s.score_thuis
+            ? { naam: t.t2.naam, bekend: true }
+            : { naam: `Winnaar ${ro32Labels[w.id]}`, bekend: false };
+      } else {
+        ro32Winnaars[w.id] = { naam: `Winnaar ${ro32Labels[w.id]}`, bekend: false };
+      }
+    });
+
+    // 1/8 mappings
+    const ro16Mapping = {
+      RO16_1: { t1: ro32Winnaars.RO32_1, t2: ro32Winnaars.RO32_4 },
+      RO16_2: { t1: ro32Winnaars.RO32_3, t2: ro32Winnaars.RO32_6 },
+      RO16_3: { t1: ro32Winnaars.RO32_2, t2: ro32Winnaars.RO32_5 },
+      RO16_4: { t1: ro32Winnaars.RO32_7, t2: ro32Winnaars.RO32_8 },
+      RO16_5: { t1: ro32Winnaars.RO32_12, t2: ro32Winnaars.RO32_11 },
+      RO16_6: { t1: ro32Winnaars.RO32_10, t2: ro32Winnaars.RO32_9 },
+      RO16_7: { t1: ro32Winnaars.RO32_15, t2: ro32Winnaars.RO32_14 },
+      RO16_8: { t1: ro32Winnaars.RO32_13, t2: ro32Winnaars.RO32_16 },
+    };
+
+    renderKOAuto(ro16Wedstrijden, 'ro16-container', (id, zijde) => ro16Mapping[id]?.[zijde] || { naam:'?', bekend:false });
+
+    // Kwartfinale winnaars van 1/8
+    const ro16Winnaars = {};
+    ro16Wedstrijden.forEach(w => {
+      const s = scores[w.id];
+      const t = ro16Mapping[w.id];
+      if (s && s.gespeeld && t) {
+        ro16Winnaars[w.id] = s.score_thuis > s.score_uit ? t.t1 : s.score_uit > s.score_thuis ? t.t2 : { naam:`Winnaar ${w.label}`, bekend:false };
+      } else { ro16Winnaars[w.id] = { naam:`Winnaar ${w.label}`, bekend:false }; }
+    });
+
+    const kwartMapping = {
+      KF_1: { t1: ro16Winnaars.RO16_3, t2: ro16Winnaars.RO16_1 },
+      KF_2: { t1: ro16Winnaars.RO16_5, t2: ro16Winnaars.RO16_6 },
+      KF_3: { t1: ro16Winnaars.RO16_2, t2: ro16Winnaars.RO16_4 },
+      KF_4: { t1: ro16Winnaars.RO16_7, t2: ro16Winnaars.RO16_8 },
+    };
+
+    renderKOAuto(kwartWedstrijden, 'kwart-container', (id, zijde) => kwartMapping[id]?.[zijde] || { naam:'?', bekend:false });
+
+    // Halve finale
+    const kwartWinnaars = {};
+    kwartWedstrijden.forEach(w => {
+      const s = scores[w.id];
+      const t = kwartMapping[w.id];
+      if (s && s.gespeeld && t) {
+        kwartWinnaars[w.id] = s.score_thuis > s.score_uit ? t.t1 : s.score_uit > s.score_thuis ? t.t2 : { naam:`Winnaar ${w.label}`, bekend:false };
+      } else { kwartWinnaars[w.id] = { naam:`Winnaar ${w.label}`, bekend:false }; }
+    });
+
+    const halveMapping = {
+      HF_1: { t1: kwartWinnaars.KF_1, t2: kwartWinnaars.KF_2 },
+      HF_2: { t1: kwartWinnaars.KF_3, t2: kwartWinnaars.KF_4 },
+    };
+
+    renderKOAuto(halveWedstrijden, 'halve-container', (id, zijde) => halveMapping[id]?.[zijde] || { naam:'?', bekend:false });
+
+    // Finale
+    const halveWinnaars = {};
+    halveWedstrijden.forEach(w => {
+      const s = scores[w.id];
+      const t = halveMapping[w.id];
+      if (s && s.gespeeld && t) {
+        halveWinnaars[w.id] = s.score_thuis > s.score_uit ? t.t1 : s.score_uit > s.score_thuis ? t.t2 : { naam:`Winnaar ${w.label}`, bekend:false };
+      } else { halveWinnaars[w.id] = { naam:`Winnaar ${w.label}`, bekend:false }; }
+    });
+
+    const finaleMapping = {
+      FINALE: { t1: halveWinnaars.HF_1, t2: halveWinnaars.HF_2 },
+    };
+
+    renderKOAuto(finaleWedstrijden, 'finale-container', (id, zijde) => finaleMapping[id]?.[zijde] || { naam:'?', bekend:false });
+  }
+
+  async function init() {
+    await laadScores();
+    renderAlles();
     db.channel('wedstrijden')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'match_results' }, async () => {
         await laadScores();
-        renderSpeeldag(speeldag1, 'fase-groep1');
-        renderSpeeldag(speeldag2, 'fase-groep2');
-        renderSpeeldag(speeldag3, 'fase-groep3');
+        renderAlles();
       }).subscribe();
   }
   init();
