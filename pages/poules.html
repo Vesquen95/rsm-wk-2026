@@ -6,9 +6,12 @@
   <title>WK Quiz 2026 – Poule-indeling</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
+    body { background: #f4f4f4; }
+    .container { max-width: 1100px; }
+
     .poules-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 16px;
       margin-top: 8px;
     }
@@ -30,82 +33,99 @@
       justify-content: space-between;
     }
 
-    .poule-header h3 {
-      font-size: 15px;
+    .poule-header h3 { font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+    .poule-label { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Standaard tabel */
+    .stand-tabel {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .stand-tabel th {
+      padding: 7px 10px;
+      font-size: 10px;
       font-weight: bold;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
-    .poule-label {
-      font-size: 11px;
-      opacity: 0.8;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      color: #888b8d;
+      background: #f9f9f9;
+      border-bottom: 2px solid #e0e0e0;
+      text-align: center;
     }
+    .stand-tabel th:first-child { text-align: left; padding-left: 12px; }
 
-    .poule-teams {
-      padding: 8px 0;
-    }
-
-    .poule-team {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 16px;
-      border-bottom: 1px solid #f4f4f4;
-      font-size: 14px;
-      font-weight: bold;
+    .stand-tabel td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #f0f0f0;
+      text-align: center;
       color: #1a1a1a;
-      transition: background 0.15s;
+    }
+    .stand-tabel td:first-child { text-align: left; padding-left: 12px; }
+    .stand-tabel tr:last-child td { border-bottom: none; }
+    .stand-tabel tr:hover td { background: #f9f9f9; }
+
+    /* Ranking badges */
+    .rang {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: bold;
+      margin-right: 6px;
+    }
+    .rang-1 { background: #3f9c35; color: white; }
+    .rang-2 { background: #009cde; color: white; }
+    .rang-3 { background: #f0f0f0; color: #888b8d; }
+    .rang-4 { background: #f0f0f0; color: #888b8d; }
+
+    .team-cel { display: flex; align-items: center; font-weight: bold; }
+    .punten-cel { font-weight: bold; color: #009cde; font-size: 14px; }
+
+    /* Nog geen scores */
+    .geen-scores {
+      padding: 14px 12px;
+      font-size: 12px;
+      color: #888b8d;
+      text-align: center;
+      font-style: italic;
     }
 
-    .poule-team:last-child { border-bottom: none; }
-    .poule-team:hover { background: #f9f9f9; }
+    /* Doorstoot indicator */
+    .stand-tabel tr.doorstoot td { border-left: 3px solid #3f9c35; }
+    .stand-tabel tr.mogelijke-doorstoot td { border-left: 3px solid #009cde; }
 
-    .team-nr {
-      width: 20px;
-      height: 20px;
-      background: #f4f4f4;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .legende {
+      padding: 8px 12px;
       font-size: 11px;
       color: #888b8d;
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-
-    .nav-links {
+      border-top: 1px solid #f0f0f0;
       display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 24px;
-      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .legende span { display: flex; align-items: center; gap: 4px; }
+    .legende-kleur {
+      width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0;
     }
 
+    .realtime-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; color: #3f9c35; font-weight: bold;
+      margin-bottom: 12px;
+    }
+    .realtime-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #3f9c35; animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .nav-links { display: flex; gap: 10px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
     .nav-links a {
-      color: #009cde;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: bold;
-      border: 1.5px solid #009cde;
-      padding: 8px 18px;
-      border-radius: 4px;
-      transition: 0.2s;
-      font-family: Arial, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
+      color: #009cde; text-decoration: none; font-size: 13px; font-weight: bold;
+      border: 1.5px solid #009cde; padding: 8px 18px; border-radius: 4px;
+      transition: 0.2s; font-family: Arial, sans-serif; text-transform: uppercase;
     }
     .nav-links a:hover { background: #009cde; color: white; }
-
-    .loading-tekst {
-      text-align: center;
-      color: #888b8d;
-      padding: 40px;
-      font-size: 14px;
-    }
   </style>
 </head>
 <body>
@@ -123,13 +143,16 @@
   <div class="container">
     <div class="page-header">
       <h1>Poule-indeling WK 2026</h1>
-      <p>12 groepen · 48 landen · USA · Canada · Mexico</p>
+      <p>Standen worden automatisch berekend op basis van ingevulde scores</p>
+    </div>
+
+    <div class="realtime-badge">
+      <span class="realtime-dot"></span>
+      Live bijgewerkt
     </div>
 
     <div id="poules-container">
-      <div class="loading-tekst">
-        <div class="loading"><div class="spinner"></div> Poules laden...</div>
-      </div>
+      <div class="loading"><div class="spinner"></div> Poules laden...</div>
     </div>
 
     <div class="nav-links">
@@ -142,52 +165,201 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
   <script>
-    async function laadPoules() {
-      const { data: teams, error } = await db
-        .from('teams')
-        .select('name, group_name')
-        .order('group_name')
-        .order('name');
+  // Alle wedstrijden groepsfase (voor standsberekening)
+  const alleWedstrijden = [
+    // Speeldag 1
+    {id:'A_SD1_1',thuis:'Mexico',uit:'Zuid-Afrika',groep:'A'},
+    {id:'A_SD1_2',thuis:'Zuid-Korea',uit:'Tsjechië',groep:'A'},
+    {id:'B_SD1_1',thuis:'Canada',uit:'Bosnië-Herzegovina',groep:'B'},
+    {id:'B_SD1_2',thuis:'Qatar',uit:'Zwitserland',groep:'B'},
+    {id:'C_SD1_1',thuis:'Brazilië',uit:'Marokko',groep:'C'},
+    {id:'C_SD1_2',thuis:'Haïti',uit:'Schotland',groep:'C'},
+    {id:'D_SD1_1',thuis:'Verenigde Staten',uit:'Paraguay',groep:'D'},
+    {id:'D_SD1_2',thuis:'Australië',uit:'Turkije',groep:'D'},
+    {id:'E_SD1_1',thuis:'Duitsland',uit:'Curaçao',groep:'E'},
+    {id:'E_SD1_2',thuis:'Ivoorkust',uit:'Ecuador',groep:'E'},
+    {id:'F_SD1_1',thuis:'Nederland',uit:'Japan',groep:'F'},
+    {id:'F_SD1_2',thuis:'Zweden',uit:'Tunesië',groep:'F'},
+    {id:'G_SD1_1',thuis:'België',uit:'Egypte',groep:'G'},
+    {id:'G_SD1_2',thuis:'Iran',uit:'Nieuw-Zeeland',groep:'G'},
+    {id:'H_SD1_1',thuis:'Spanje',uit:'Kaapverdië',groep:'H'},
+    {id:'H_SD1_2',thuis:'Saudi-Arabië',uit:'Uruguay',groep:'H'},
+    {id:'I_SD1_1',thuis:'Frankrijk',uit:'Senegal',groep:'I'},
+    {id:'I_SD1_2',thuis:'Irak',uit:'Noorwegen',groep:'I'},
+    {id:'J_SD1_1',thuis:'Argentinië',uit:'Algerije',groep:'J'},
+    {id:'J_SD1_2',thuis:'Oostenrijk',uit:'Jordanië',groep:'J'},
+    {id:'K_SD1_1',thuis:'Portugal',uit:'DR Congo',groep:'K'},
+    {id:'K_SD1_2',thuis:'Oezbekistan',uit:'Colombia',groep:'K'},
+    {id:'L_SD1_1',thuis:'Engeland',uit:'Kroatië',groep:'L'},
+    {id:'L_SD1_2',thuis:'Ghana',uit:'Panama',groep:'L'},
+    // Speeldag 2
+    {id:'A_SD2_1',thuis:'Tsjechië',uit:'Zuid-Afrika',groep:'A'},
+    {id:'A_SD2_2',thuis:'Mexico',uit:'Zuid-Korea',groep:'A'},
+    {id:'B_SD2_1',thuis:'Zwitserland',uit:'Bosnië-Herzegovina',groep:'B'},
+    {id:'B_SD2_2',thuis:'Canada',uit:'Qatar',groep:'B'},
+    {id:'C_SD2_1',thuis:'Schotland',uit:'Marokko',groep:'C'},
+    {id:'C_SD2_2',thuis:'Brazilië',uit:'Haïti',groep:'C'},
+    {id:'D_SD2_1',thuis:'Verenigde Staten',uit:'Australië',groep:'D'},
+    {id:'D_SD2_2',thuis:'Turkije',uit:'Paraguay',groep:'D'},
+    {id:'E_SD2_1',thuis:'Duitsland',uit:'Ivoorkust',groep:'E'},
+    {id:'E_SD2_2',thuis:'Ecuador',uit:'Curaçao',groep:'E'},
+    {id:'F_SD2_1',thuis:'Nederland',uit:'Zweden',groep:'F'},
+    {id:'F_SD2_2',thuis:'Tunesië',uit:'Japan',groep:'F'},
+    {id:'G_SD2_1',thuis:'België',uit:'Iran',groep:'G'},
+    {id:'G_SD2_2',thuis:'Nieuw-Zeeland',uit:'Egypte',groep:'G'},
+    {id:'H_SD2_1',thuis:'Spanje',uit:'Saudi-Arabië',groep:'H'},
+    {id:'H_SD2_2',thuis:'Uruguay',uit:'Kaapverdië',groep:'H'},
+    {id:'I_SD2_1',thuis:'Frankrijk',uit:'Irak',groep:'I'},
+    {id:'I_SD2_2',thuis:'Noorwegen',uit:'Senegal',groep:'I'},
+    {id:'J_SD2_1',thuis:'Argentinië',uit:'Oostenrijk',groep:'J'},
+    {id:'J_SD2_2',thuis:'Jordanië',uit:'Algerije',groep:'J'},
+    {id:'K_SD2_1',thuis:'Portugal',uit:'Oezbekistan',groep:'K'},
+    {id:'K_SD2_2',thuis:'Colombia',uit:'DR Congo',groep:'K'},
+    {id:'L_SD2_1',thuis:'Engeland',uit:'Ghana',groep:'L'},
+    {id:'L_SD2_2',thuis:'Panama',uit:'Kroatië',groep:'L'},
+    // Speeldag 3
+    {id:'B_SD3_1',thuis:'Bosnië-Herzegovina',uit:'Qatar',groep:'B'},
+    {id:'B_SD3_2',thuis:'Zwitserland',uit:'Canada',groep:'B'},
+    {id:'C_SD3_1',thuis:'Schotland',uit:'Brazilië',groep:'C'},
+    {id:'C_SD3_2',thuis:'Marokko',uit:'Haïti',groep:'C'},
+    {id:'A_SD3_1',thuis:'Tsjechië',uit:'Mexico',groep:'A'},
+    {id:'A_SD3_2',thuis:'Zuid-Afrika',uit:'Zuid-Korea',groep:'A'},
+    {id:'E_SD3_1',thuis:'Ecuador',uit:'Duitsland',groep:'E'},
+    {id:'E_SD3_2',thuis:'Curaçao',uit:'Ivoorkust',groep:'E'},
+    {id:'F_SD3_1',thuis:'Japan',uit:'Zweden',groep:'F'},
+    {id:'F_SD3_2',thuis:'Tunesië',uit:'Nederland',groep:'F'},
+    {id:'D_SD3_1',thuis:'Turkije',uit:'Verenigde Staten',groep:'D'},
+    {id:'D_SD3_2',thuis:'Paraguay',uit:'Australië',groep:'D'},
+    {id:'I_SD3_1',thuis:'Senegal',uit:'Irak',groep:'I'},
+    {id:'I_SD3_2',thuis:'Noorwegen',uit:'Frankrijk',groep:'I'},
+    {id:'H_SD3_1',thuis:'Uruguay',uit:'Spanje',groep:'H'},
+    {id:'H_SD3_2',thuis:'Kaapverdië',uit:'Saudi-Arabië',groep:'H'},
+    {id:'G_SD3_1',thuis:'Egypte',uit:'Iran',groep:'G'},
+    {id:'G_SD3_2',thuis:'Nieuw-Zeeland',uit:'België',groep:'G'},
+    {id:'L_SD3_1',thuis:'Kroatië',uit:'Ghana',groep:'L'},
+    {id:'L_SD3_2',thuis:'Panama',uit:'Engeland',groep:'L'},
+    {id:'K_SD3_1',thuis:'DR Congo',uit:'Oezbekistan',groep:'K'},
+    {id:'K_SD3_2',thuis:'Colombia',uit:'Portugal',groep:'K'},
+    {id:'J_SD3_1',thuis:'Algerije',uit:'Oostenrijk',groep:'J'},
+    {id:'J_SD3_2',thuis:'Jordanië',uit:'Argentinië',groep:'J'},
+  ];
 
-      if (error || !teams?.length) {
-        document.getElementById('poules-container').innerHTML =
-          '<p style="text-align:center;color:#888b8d;padding:40px">Geen teams gevonden. Voer eerst het teams SQL script uit.</p>';
-        return;
-      }
+  // Groepen en hun teams
+  const groepTeams = {
+    A: ['Mexico','Zuid-Afrika','Zuid-Korea','Tsjechië'],
+    B: ['Canada','Bosnië-Herzegovina','Qatar','Zwitserland'],
+    C: ['Brazilië','Marokko','Haïti','Schotland'],
+    D: ['Verenigde Staten','Paraguay','Australië','Turkije'],
+    E: ['Duitsland','Curaçao','Ivoorkust','Ecuador'],
+    F: ['Nederland','Japan','Zweden','Tunesië'],
+    G: ['België','Egypte','Iran','Nieuw-Zeeland'],
+    H: ['Spanje','Kaapverdië','Saudi-Arabië','Uruguay'],
+    I: ['Frankrijk','Senegal','Irak','Noorwegen'],
+    J: ['Argentinië','Algerije','Oostenrijk','Jordanië'],
+    K: ['Portugal','DR Congo','Oezbekistan','Colombia'],
+    L: ['Engeland','Kroatië','Ghana','Panama'],
+  };
 
-      // Groepeer per poule
-      const poules = {};
-      teams.forEach(t => {
-        if (!poules[t.group_name]) poules[t.group_name] = [];
-        poules[t.group_name].push(t.name);
+  function berekenStand(groep, scores) {
+    const teams = groepTeams[groep];
+    const stand = {};
+    teams.forEach(t => { stand[t] = {team:t, gs:0, w:0, g:0, v:0, dv:0, dt:0, pts:0}; });
+
+    alleWedstrijden.filter(w => w.groep === groep).forEach(w => {
+      const s = scores[w.id];
+      if (!s || !s.gespeeld || s.score_thuis === null) return;
+      const st = s.score_thuis, su = s.score_uit;
+      stand[w.thuis].gs++;
+      stand[w.uit].gs++;
+      stand[w.thuis].dv += st;
+      stand[w.thuis].dt += su;
+      stand[w.uit].dv += su;
+      stand[w.uit].dt += st;
+      if (st > su) { stand[w.thuis].w++; stand[w.thuis].pts+=3; stand[w.uit].v++; }
+      else if (st === su) { stand[w.thuis].g++; stand[w.thuis].pts++; stand[w.uit].g++; stand[w.uit].pts++; }
+      else { stand[w.uit].w++; stand[w.uit].pts+=3; stand[w.thuis].v++; }
+    });
+
+    return Object.values(stand).sort((a,b) => {
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      const dsA = a.dv - a.dt, dsB = b.dv - b.dt;
+      if (dsB !== dsA) return dsB - dsA;
+      return b.dv - a.dv;
+    });
+  }
+
+  function renderPoules(scores) {
+    const container = document.getElementById('poules-container');
+    container.innerHTML = '<div class="poules-grid" id="poules-grid"></div>';
+    const grid = document.getElementById('poules-grid');
+
+    Object.entries(groepTeams).forEach(([groep, teams]) => {
+      const stand = berekenStand(groep, scores);
+      const heeftScores = stand.some(t => t.gs > 0);
+
+      const kaart = document.createElement('div');
+      kaart.className = 'poule-kaart';
+
+      let rijen = '';
+      stand.forEach((t, i) => {
+        const ds = t.dv - t.dt;
+        const dsStr = ds > 0 ? '+'+ds : ds;
+        const klasse = i === 0 ? 'doorstoot' : i === 1 ? 'doorstoot' : i === 2 ? 'mogelijke-doorstoot' : '';
+        const rangKlasse = i === 0 ? 'rang-1' : i === 1 ? 'rang-2' : i === 2 ? 'rang-3' : 'rang-4';
+        rijen += `<tr class="${klasse}">
+          <td><div class="team-cel"><span class="rang ${rangKlasse}">${i+1}</span>${t.team}</div></td>
+          <td>${t.gs}</td>
+          <td>${t.w}</td>
+          <td>${t.g}</td>
+          <td>${t.v}</td>
+          <td>${heeftScores ? t.dv+'-'+t.dt : '-'}</td>
+          <td>${heeftScores ? dsStr : '-'}</td>
+          <td class="punten-cel">${t.pts}</td>
+        </tr>`;
       });
 
-      const container = document.getElementById('poules-container');
-      container.innerHTML = '<div class="poules-grid" id="poules-grid"></div>';
-      const grid = document.getElementById('poules-grid');
+      kaart.innerHTML = `
+        <div class="poule-header">
+          <h3>Groep ${groep}</h3>
+          <span class="poule-label">${heeftScores ? stand[0].gs + ' van 3 speeld.' : '0 gespeeld'}</span>
+        </div>
+        <table class="stand-tabel">
+          <thead>
+            <tr>
+              <th>Team</th>
+              <th title="Gespeeld">G</th>
+              <th title="Gewonnen">W</th>
+              <th title="Gelijk">Gl</th>
+              <th title="Verloren">V</th>
+              <th title="Doelpunten voor-tegen">DV-DT</th>
+              <th title="Doelsaldo">DS</th>
+              <th title="Punten">Ptn</th>
+            </tr>
+          </thead>
+          <tbody>${rijen}</tbody>
+        </table>
+        <div class="legende">
+          <span><span class="legende-kleur" style="background:#3f9c35"></span> Doorstoot</span>
+          <span><span class="legende-kleur" style="background:#009cde"></span> Mogelijke doorstoot (3e)</span>
+        </div>
+      `;
+      grid.appendChild(kaart);
+    });
+  }
 
-      Object.entries(poules).sort(([a], [b]) => a.localeCompare(b)).forEach(([groep, teamLijst]) => {
-        const kaart = document.createElement('div');
-        kaart.className = 'poule-kaart';
-        kaart.innerHTML = `
-          <div class="poule-header">
-            <h3>Groep ${groep}</h3>
-            <span class="poule-label">${teamLijst.length} landen</span>
-          </div>
-          <div class="poule-teams">
-            ${teamLijst.map((naam, i) => `
-              <div class="poule-team">
-                <span class="team-nr">${i + 1}</span>
-                <span>${naam}</span>
-              </div>
-            `).join('')}
-          </div>
-        `;
-        grid.appendChild(kaart);
-      });
-    }
+  async function laadAlles() {
+    const { data: results } = await db.from('match_results').select('match_id, score_thuis, score_uit, gespeeld');
+    const scores = {};
+    if (results) results.forEach(r => { scores[r.match_id] = r; });
+    renderPoules(scores);
+  }
 
-    laadPoules();
+  laadAlles();
+
+  // Realtime updates
+  db.channel('poules-realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'match_results' }, () => laadAlles())
+    .subscribe();
   </script>
 </body>
 </html>
