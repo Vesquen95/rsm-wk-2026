@@ -31,6 +31,9 @@
     .question-card.alleen-lezen input,
     .question-card.alleen-lezen select,
     .question-card.alleen-lezen button { cursor:not-allowed; opacity:0.85; }
+    .antwoord-samenvatting { margin-top: 10px; padding: 10px 12px; background: #f4fbf3; border: 1px solid #d8efd4; border-radius: 8px; font-size: 13px; color: #2c3e50; }
+    .antwoord-samenvatting strong { color: #3f9c35; }
+    .antwoord-samenvatting.geen-antwoord { background: #f8f9fa; border-color: #e3e7ea; color: #7f8c8d; }
   </style>
 </head>
 <body>
@@ -267,15 +270,33 @@
         </div>`;
       }
 
+      const antwoordSamenvatting = alleenLezen ? bouwAntwoordSamenvatting(huidigAntwoord) : '';
+
       div.innerHTML = `
         <div class="question-number">Vraag ${nr} · <span class="badge badge-punten-${vraag.points}">${vraag.points} pt</span></div>
         <div class="question-text">${vraag.question_text}</div>
         ${inputHTML}
+        ${antwoordSamenvatting}
         <div class="opgeslagen-badge" id="saved-${vraag.id}" style="display:${huidigAntwoord?'inline-flex':'none'}">✓ Opgeslagen</div>
       `;
 
       if (vraag.question_type === 'team_select') laadTeamsInDropdown(vraag.id, huidigAntwoord);
       return div;
+    }
+
+
+    function escapeHTML(waarde) {
+      return String(waarde ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function bouwAntwoordSamenvatting(antwoord) {
+      if (!antwoord) return '<div class="antwoord-samenvatting geen-antwoord"><strong>Jouw antwoord:</strong> Nog geen antwoord ingevuld.</div>';
+      return `<div class="antwoord-samenvatting"><strong>Jouw antwoord:</strong> ${escapeHTML(antwoord)}</div>`;
     }
 
     async function laadTeamsInDropdown(vraagId, huidigAntwoord) {
