@@ -160,7 +160,7 @@
 
       if (isVoorbij) {
         const reden = !ronde.is_open ? 'Deze ronde is afgesloten door de host.' : 'De deadline voor deze ronde is verstreken.';
-        body.insertAdjacentHTML('beforeend', `<div class="alleen-lezen-melding">🔒 ${reden} Je kan je antwoorden nog raadplegen, maar niet meer wijzigen.</div>`);
+        body.insertAdjacentHTML('beforeend', `<div class="alleen-lezen-melding">🔒 ${reden} Je kan de juiste antwoorden raadplegen, maar niets meer wijzigen.</div>`);
       }
 
       const wedstrijdVragen = vragen.filter(v => ['result_1x2', 'score'].includes(v.question_type));
@@ -270,7 +270,7 @@
         </div>`;
       }
 
-      const antwoordSamenvatting = alleenLezen ? bouwAntwoordSamenvatting(huidigAntwoord) : '';
+      const antwoordSamenvatting = alleenLezen ? bouwHostAntwoordSamenvatting(vraag.correct_answer) : '';
 
       div.innerHTML = `
         <div class="question-number">Vraag ${nr} · <span class="badge badge-punten-${vraag.points}">${vraag.points} pt</span></div>
@@ -294,9 +294,9 @@
         .replace(/'/g, '&#039;');
     }
 
-    function bouwAntwoordSamenvatting(antwoord) {
-      if (!antwoord) return '<div class="antwoord-samenvatting geen-antwoord"><strong>Jouw antwoord:</strong> Nog geen antwoord ingevuld.</div>';
-      return `<div class="antwoord-samenvatting"><strong>Jouw antwoord:</strong> ${escapeHTML(antwoord)}</div>`;
+    function bouwHostAntwoordSamenvatting(antwoord) {
+      if (!antwoord) return '<div class="antwoord-samenvatting geen-antwoord"><strong>Juiste antwoord:</strong> Nog niet ingevuld door de host.</div>';
+      return `<div class="antwoord-samenvatting"><strong>Juiste antwoord:</strong> ${escapeHTML(antwoord)}</div>`;
     }
 
     async function laadTeamsInDropdown(vraagId, huidigAntwoord) {
