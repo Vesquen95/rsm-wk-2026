@@ -27,6 +27,10 @@
     .welkom-banner h2 { font-size: 17px; font-weight: bold; margin-bottom: 2px; }
     .welkom-banner p { font-size: 13px; opacity: 0.9; }
     .opgeslagen-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: #3f9c35; font-weight: bold; margin-top: 10px; }
+    .alleen-lezen-melding { background:#fff8e6; border:1px solid #f5d389; color:#8a5a00; border-radius:8px; padding:12px 14px; margin-bottom:16px; font-size:14px; font-weight:600; }
+    .question-card.alleen-lezen input,
+    .question-card.alleen-lezen select,
+    .question-card.alleen-lezen button { cursor:not-allowed; opacity:0.85; }
   </style>
 </head>
 <body>
@@ -67,6 +71,8 @@
   <script>
     let gebruikerId = null;
     let gebruikerAntwoorden = {};
+    let rondeBewerkbaar = {};
+    let vraagRondeMap = {};
     let saveTimer = null;
 
     async function init() {
@@ -118,11 +124,15 @@
       const beantwoord = vragen.filter(v => gebruikerAntwoorden[v.id]).length;
       const volledig = beantwoord === vragen.length && vragen.length > 0;
 
+      rondeBewerkbaar[ronde.id] = !isVoorbij;
+      vragen.forEach(v => { vraagRondeMap[v.id] = ronde.id; });
+
       let deadlineText = 'Geen deadline ingesteld';
       if (!ronde.is_open) deadlineText = '🔒 Ronde gesloten door host';
+      else if (deadline && deadline < nu) deadlineText = '⏰ Deadline verstreken';
       else if (deadline) deadlineText = '📅 Deadline: ' + deadline.toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
-      const defaultOpen = !isVoorbij && !volledig;
+      const defaultOpen = !volledig || isVoorbij;
 
       const wrapper = document.createElement('div');
       wrapper.style.marginBottom = '16px';
@@ -146,8 +156,8 @@
       const body = wrapper.querySelector('#ronde-body-' + ronde.id);
 
       if (isVoorbij) {
-        body.innerHTML = '<div class="voorbij-overlay">🔒 Deze ronde is gesloten. Je antwoorden zijn opgeslagen.</div>';
-        return wrapper;
+        const reden = !ronde.is_open ? 'Deze ronde is afgesloten door de host.' : 'De deadline voor deze ronde is verstreken.';
+        body.insertAdjacentHTML('beforeend', `<div class="alleen-lezen-melding">🔒 ${reden} Je kan je antwoorden nog raadplegen, maar niet meer wijzigen.</div>`);
       }
 
       const wedstrijdVragen = vragen.filter(v => ['result_1x2', 'score'].includes(v.question_type));
@@ -157,7 +167,7 @@
         const sectie = document.createElement('div');
         sectie.className = 'wedstrijd-sectie';
         sectie.innerHTML = '<h3>⚽ Wedstrijden</h3>';
-        wedstrijdVragen.forEach((v, i) => sectie.appendChild(bouwVraagElement(v, i + 1)));
+        wedstrijdVragen.forEach((v, i) => sectie.appendChild(bouwVraagElement(v, i + 1, isVoorbij)));
         body.appendChild(sectie);
       }
 
@@ -165,13 +175,13 @@
         const sectie = document.createElement('div');
         sectie.className = 'wedstrijd-sectie';
         sectie.innerHTML = '<h3>🎯 Algemene vragen</h3>';
-        andereVragen.forEach((v, i) => sectie.appendChild(bouwVraagElement(v, i + 1)));
+        andereVragen.forEach((v, i) => sectie.appendChild(bouwVraagElement(v, i + 1, isVoorbij)));
         body.appendChild(sectie);
       }
 
-      if (!vragen.length) body.innerHTML = '<p style="text-align:center;color:#7f8c8d;padding:20px">Nog geen vragen in deze ronde.</p>';
+      if (!vragen.length) body.innerHTML += '<p style="text-align:center;color:#7f8c8d;padding:20px">Nog geen vragen in deze ronde.</p>';
 
-      // Auto-sluit wanneer deadline verstrijkt
+      // Auto-zet op alleen-lezen wanneer deadline verstrijkt
       if (deadline && ronde.is_open && !isVoorbij) {
         startDeadlineTimer(ronde.id, deadline);
       }
@@ -182,31 +192,25 @@
     function startDeadlineTimer(rondeId, deadline) {
       if (deadlineTimers[rondeId]) clearInterval(deadlineTimers[rondeId]);
 
-      deadlineTimers[rondeId] = setInterval(() => {
+      deadlineTimers[rondeId] = setInterval(async () => {
         const nu = new Date();
         if (deadline - nu <= 0) {
           clearInterval(deadlineTimers[rondeId]);
-
-          const deadlineTekst = document.getElementById('ronde-deadline-tekst-' + rondeId);
-          const body = document.getElementById('ronde-body-' + rondeId);
-
-          if (deadlineTekst) deadlineTekst.innerHTML = '⏰ Deadline verstreken — vragen gesloten';
-          if (body) {
-            body.innerHTML = '<div class="voorbij-overlay">⏰ De deadline is verstreken. Je antwoorden zijn opgeslagen en de vragen zijn gesloten.</div>';
-            body.style.display = 'block';
-          }
+          rondeBewerkbaar[rondeId] = false;
+          await laadRondes();
         }
       }, 1000);
     }
 
-    function bouwVraagElement(vraag, nr) {
+    function bouwVraagElement(vraag, nr, alleenLezen = false) {
       const div = document.createElement('div');
       const huidigAntwoord = gebruikerAntwoorden[vraag.id] || '';
-      div.className = 'question-card' + (huidigAntwoord ? ' beantwoord' : '');
+      div.className = 'question-card' + (huidigAntwoord ? ' beantwoord' : '') + (alleenLezen ? ' alleen-lezen' : '');
       div.id = 'vraag-' + vraag.id;
 
       const thuisTeam = vraag.teams;
       const uitTeam = vraag.away_team;
+      const disabledAttr = alleenLezen ? ' disabled' : '';
       let inputHTML = '';
 
       if (vraag.question_type === 'result_1x2') {
@@ -218,9 +222,9 @@
             <span class="team-name">${uitTeam?.name || 'Uit'} ${uitTeam?.flag_emoji || ''}</span>
           </div>
           <div class="result-buttons">
-            <button class="result-btn ${g==='1'?'selected-1':''}" onclick="slaAntwoordOp(${vraag.id},'1',this,'result')">1<br><small>Thuiswinst</small></button>
-            <button class="result-btn ${g==='X'?'selected-X':''}" onclick="slaAntwoordOp(${vraag.id},'X',this,'result')">X<br><small>Gelijkspel</small></button>
-            <button class="result-btn ${g==='2'?'selected-2':''}" onclick="slaAntwoordOp(${vraag.id},'2',this,'result')">2<br><small>Uitwinst</small></button>
+            <button class="result-btn ${g==='1'?'selected-1':''}" ${alleenLezen ? 'disabled' : `onclick="slaAntwoordOp(${vraag.id},'1',this,'result')"`}>1<br><small>Thuiswinst</small></button>
+            <button class="result-btn ${g==='X'?'selected-X':''}" ${alleenLezen ? 'disabled' : `onclick="slaAntwoordOp(${vraag.id},'X',this,'result')"`}>X<br><small>Gelijkspel</small></button>
+            <button class="result-btn ${g==='2'?'selected-2':''}" ${alleenLezen ? 'disabled' : `onclick="slaAntwoordOp(${vraag.id},'2',this,'result')"`}>2<br><small>Uitwinst</small></button>
           </div>
           <p class="punten-info">✦ Juist: ${vraag.points} punten</p>`;
       } else if (vraag.question_type === 'score') {
@@ -232,14 +236,14 @@
             <span class="team-name">${uitTeam?.name || 'Uit'} ${uitTeam?.flag_emoji || ''}</span>
           </div>
           <div class="score-input-group" style="justify-content:center">
-            <input type="number" min="0" max="30" value="${d[0]}" id="score-thuis-${vraag.id}" placeholder="0" onchange="slaScoreOp(${vraag.id})" style="width:70px;text-align:center">
+            <input type="number" min="0" max="30" value="${d[0]}" id="score-thuis-${vraag.id}" placeholder="0" ${disabledAttr} onchange="slaScoreOp(${vraag.id})" style="width:70px;text-align:center">
             <span class="score-separator">—</span>
-            <input type="number" min="0" max="30" value="${d[1]}" id="score-uit-${vraag.id}" placeholder="0" onchange="slaScoreOp(${vraag.id})" style="width:70px;text-align:center">
+            <input type="number" min="0" max="30" value="${d[1]}" id="score-uit-${vraag.id}" placeholder="0" ${disabledAttr} onchange="slaScoreOp(${vraag.id})" style="width:70px;text-align:center">
           </div>
           <p class="punten-info">✦ Juiste score: ${vraag.points} punten</p>`;
       } else if (vraag.question_type === 'team_select') {
         inputHTML = `<div class="form-group" style="margin:0">
-          <select id="input-${vraag.id}" onchange="slaAntwoordOp(${vraag.id},this.value,null,'select')">
+          <select id="input-${vraag.id}" ${disabledAttr} onchange="slaAntwoordOp(${vraag.id},this.value,null,'select')">
             <option value="">-- Kies een land --</option>
           </select>
           <p class="punten-info">✦ Juist: ${vraag.points} punten</p>
@@ -248,6 +252,7 @@
         inputHTML = `<div class="form-group" style="margin:0">
           <input type="number" min="0" id="input-${vraag.id}" value="${huidigAntwoord}"
             placeholder="Vul een getal in..."
+            ${disabledAttr}
             oninput="valideerGetal(${vraag.id}, this)"
             style="max-width:180px">
           <div id="fout-${vraag.id}" style="display:none;color:#c0392b;font-size:12px;margin-top:5px;font-weight:bold">
@@ -257,7 +262,7 @@
         </div>`;
       } else {
         inputHTML = `<div class="form-group" style="margin:0">
-          <input type="text" id="input-${vraag.id}" value="${huidigAntwoord}" placeholder="Jouw antwoord..." oninput="slaAntwoordOpMetVertraging(${vraag.id},this.value)">
+          <input type="text" id="input-${vraag.id}" value="${huidigAntwoord}" placeholder="Jouw antwoord..." ${disabledAttr} oninput="slaAntwoordOpMetVertraging(${vraag.id},this.value)">
           <p class="punten-info">✦ Juist: ${vraag.points} punten</p>
         </div>`;
       }
@@ -286,7 +291,13 @@
       });
     }
 
+    function magVraagBewerken(vraagId) {
+      const rondeId = vraagRondeMap[vraagId];
+      return rondeId && rondeBewerkbaar[rondeId];
+    }
+
     async function slaAntwoordOp(vraagId, waarde, knop, type) {
+      if (!magVraagBewerken(vraagId)) return;
       gebruikerAntwoorden[vraagId] = waarde;
       if (type === 'result' && knop) {
         knop.closest('.result-buttons').querySelectorAll('.result-btn').forEach(b => b.className = 'result-btn');
@@ -296,6 +307,7 @@
     }
 
     function valideerGetal(vraagId, input) {
+      if (!magVraagBewerken(vraagId)) return;
       const waarde = input.value.trim();
       const foutEl = document.getElementById('fout-' + vraagId);
       // Controleer of het een geldig geheel getal is
@@ -310,12 +322,14 @@
     }
 
     function slaAntwoordOpMetVertraging(vraagId, waarde) {
+      if (!magVraagBewerken(vraagId)) return;
       gebruikerAntwoorden[vraagId] = waarde;
       clearTimeout(saveTimer);
       saveTimer = setTimeout(() => slaOp(vraagId, waarde), 800);
     }
 
     async function slaScoreOp(vraagId) {
+      if (!magVraagBewerken(vraagId)) return;
       const t = document.getElementById('score-thuis-' + vraagId)?.value;
       const u = document.getElementById('score-uit-' + vraagId)?.value;
       if (t === '' || u === '') return;
@@ -323,6 +337,19 @@
     }
 
     async function slaOp(vraagId, waarde) {
+      if (!magVraagBewerken(vraagId)) return;
+
+      // Extra controle vlak voor opslaan, zodat een net gesloten ronde niet per ongeluk nog wordt aangepast.
+      const rondeId = vraagRondeMap[vraagId];
+      const { data: rondeCheck } = await db.from('rounds').select('is_open, deadline').eq('id', rondeId).single();
+      const deadline = rondeCheck?.deadline ? new Date(rondeCheck.deadline) : null;
+      const nu = new Date();
+      if (!rondeCheck?.is_open || (deadline && deadline < nu)) {
+        rondeBewerkbaar[rondeId] = false;
+        await laadRondes();
+        return;
+      }
+
       const { error } = await db.from('answers').upsert({
         user_id: gebruikerId, question_id: vraagId,
         answer_value: waarde, updated_at: new Date().toISOString()
